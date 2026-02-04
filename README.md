@@ -29,16 +29,23 @@ Ele coleta informações do próprio GitHub e mantém o README sempre atualizado
 
 ---
 
-## 📦 Estrutura do Projeto
- ┣ 📂 scripts
- ┃ ┗ 🐍 update_readme.py — Script principal de atualização
- ┣ 📂 .github
- ┃ ┣ 📂 workflows
- ┃ ┃ ┗ ⚙️ update-readme.yml — GitHub Actions
- ┃ ┗ 🗂️ settings.json — Dados gerados automaticamente
- ┣ 📄 README.md — README do perfil
- ┗ 📄 requirements.txt
-
+.
+├── scripts/
+│   └── update_readme.py
+│       # Script principal de atualização
+│
+├── .github/
+│   ├── workflows/
+│   │   └── update-readme.yml
+│   │       # Workflow do GitHub Actions
+│   │
+│   └── settings.json
+│       # Dados gerados automaticamente
+│
+├── README.md
+│   # README do perfil
+│
+└── requirements.txt
 
 ---
 
