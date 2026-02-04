@@ -9,9 +9,8 @@ Ele coleta informações do próprio GitHub e mantém o README sempre atualizado
 ## ✨ Funcionalidades
 
 - 📊 Total de repositórios públicos  
-- 🧠 Contagem de projetos por linguagem  
-- 🕛 Horários fixos de atualização (12h e 19h – Horário de Brasília)  
-- ⏱️ Execução automática a cada 10 minutos  
+- 🧠 Contagem de projetos por linguagem
+- ⏱️ Execução automática a cada 30 minutos  
 - 🔁 Atualização imediata via workflow manual  
 - 🧼 Evita commits quando não há mudanças  
 
