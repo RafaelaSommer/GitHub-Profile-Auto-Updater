@@ -2,6 +2,7 @@ name: Atualizar README do Perfil
 
 on:
   schedule:
+    - cron: "*/30 * * * *" # a cada 30 minutos
   workflow_dispatch:
 
 permissions:
@@ -9,6 +10,7 @@ permissions:
 
 jobs:
   atualizar-readme:
+    if: false # ⏸️ workflow DESATIVADO
     runs-on: ubuntu-latest
 
     steps:
