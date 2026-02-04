@@ -75,4 +75,5 @@ Ideal para:
 ## 👩‍💻 Autora
 
 **Rafaela Sommer**  
-GitHub: https://github.com/RafaelaSommer# GitHub-Profile-Auto-Updater
+GitHub: https://github.com/RafaelaSommer
+# GitHub-Profile-Auto-Updater
