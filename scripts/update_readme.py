@@ -1,3 +1,6 @@
+import sys
+sys.exit()
+
 from datetime import datetime, timedelta, timezone
 import requests
 import json
@@ -5,18 +8,6 @@ import re
 import os
 from collections import Counter
 
-# ==============================
-# CONTROLE DE EXECUÇÃO
-# ==============================
-SCRIPT_ATIVO = False  # ← mude para True quando quiser reativar
-
-if not SCRIPT_ATIVO:
-    print("⏸️ Script temporariamente desativado")
-    exit(0)
-
-# ==============================
-# CONFIGURAÇÕES
-# ==============================
 USERNAME = "RafaelaSommer"
 README_PATH = "README.md"
 SETTINGS_PATH = ".github/settings.json"
@@ -28,9 +19,6 @@ TZ_LABEL = "Horário de Brasília"
 now_utc = datetime.now(timezone.utc)
 now_brazil = now_utc.astimezone(BRAZIL_TZ)
 
-# ==============================
-# FUNÇÕES
-# ==============================
 def load_settings(path):
     if not os.path.exists(path):
         return {}
@@ -47,9 +35,6 @@ headers = {"Accept": "application/vnd.github+json"}
 if TOKEN:
     headers["Authorization"] = f"Bearer {TOKEN}"
 
-# ==============================
-# BUSCAR REPOSITÓRIOS
-# ==============================
 repos = []
 page = 1
 while True:
@@ -64,9 +49,6 @@ while True:
     repos.extend(batch)
     page += 1
 
-# ==============================
-# CONTAGENS
-# ==============================
 total_projects = len(repos)
 
 languages = Counter()
@@ -80,38 +62,41 @@ lang_lines = "<br>\n".join(
 
 last_update = now_brazil.strftime("%d/%m/%Y %H:%M:%S")
 
-# ==============================
-# ATUALIZAR SETTINGS.JSON
-# ==============================
+next_min = now_brazil + timedelta(minutes=25)
+next_max = now_brazil + timedelta(minutes=45)
+
+next_window_str = (
+    f"{next_min.strftime('%d/%m/%Y')} "
+    f"entre {next_min.strftime('%H:%M')} "
+    f"e {next_max.strftime('%H:%M')}"
+)
+
 settings.update({
     "username": USERNAME,
     "total_projects": total_projects,
     "languages": dict(languages),
     "last_update": last_update,
-    "updated_by": "manual-run"
+    "next_update_window": next_window_str,
+    "updated_by": "github-actions"
 })
 
 os.makedirs(".github", exist_ok=True)
 with open(SETTINGS_PATH, "w", encoding="utf-8") as f:
     json.dump(settings, f, indent=2, ensure_ascii=False)
 
-# ==============================
-# BLOCO README
-# ==============================
 info_block = (
     "<!-- INFO-START -->\n"
     "📌 <strong>Últimas Atualizações</strong><br>\n"
     f"📊 <strong>Total de projetos:</strong> {total_projects}<br>\n"
     "🧠 <strong>Projetos por linguagem:</strong><br>\n"
     f"{lang_lines}<br>\n"
-    "⏸️ <strong>Atualização automática:</strong> pausada temporariamente<br>\n"
+    "🔄 <strong>Atualização automática:</strong> a cada 30 minutos via GitHub Actions<br>\n"
+    "🔮 <strong>Próxima atualização prevista:</strong><br>\n"
+    f"• {next_window_str} ({TZ_LABEL})<br>\n"
     f"⏱️ <strong>Última atualização:</strong> {last_update} ({TZ_LABEL})\n"
     "<!-- INFO-END -->"
 )
 
-# ==============================
-# ATUALIZAR README
-# ==============================
 with open(README_PATH, "r", encoding="utf-8") as f:
     content = f.read()
 
