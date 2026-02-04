@@ -1,12 +1,10 @@
-import sys
-sys.exit()
-
 from datetime import datetime, timedelta, timezone
 import requests
 import json
 import re
 import os
 from collections import Counter
+import sys
 
 USERNAME = "RafaelaSommer"
 README_PATH = "README.md"
@@ -15,9 +13,6 @@ TOKEN = os.getenv("GITHUB_TOKEN")
 
 BRAZIL_TZ = timezone(timedelta(hours=-3))
 TZ_LABEL = "Horário de Brasília"
-
-now_utc = datetime.now(timezone.utc)
-now_brazil = now_utc.astimezone(BRAZIL_TZ)
 
 def load_settings(path):
     if not os.path.exists(path):
@@ -30,6 +25,12 @@ def load_settings(path):
         return {}
 
 settings = load_settings(SETTINGS_PATH)
+
+if settings.get("enabled") is False:
+    sys.exit()
+
+now_utc = datetime.now(timezone.utc)
+now_brazil = now_utc.astimezone(BRAZIL_TZ)
 
 headers = {"Accept": "application/vnd.github+json"}
 if TOKEN:
@@ -72,6 +73,7 @@ next_window_str = (
 )
 
 settings.update({
+    "enabled": True,
     "username": USERNAME,
     "total_projects": total_projects,
     "languages": dict(languages),
