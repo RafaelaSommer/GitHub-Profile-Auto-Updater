@@ -1,9 +1,19 @@
-name: Atualizar README do Perfil
+# ============================================
+# WORKFLOW DESATIVADO TEMPORARIAMENTE
+# ============================================
+# Motivo: evitar execuções automáticas
+#
+# Para reativar:
+# 1. Descomente o bloco "on"
+# 2. Ajuste o cron se necessário
+# ============================================
 
-on:
-  schedule:
-    - cron: "*/10 * * * *" # a cada 10 minutos
-  workflow_dispatch:
+name: Atualizar README do Perfil (DESATIVADO)
+
+# on:
+#   schedule:
+#     - cron: "*/10 * * * *"
+#   workflow_dispatch:
 
 permissions:
   contents: write
@@ -13,35 +23,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Clonar repositório
-        uses: actions/checkout@v4
-
-      - name: Configurar Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.11"
-
-      - name: Instalar dependências
+      - name: Workflow desativado
         run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt
-
-      - name: Executar script de atualização
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: python scripts/update_readme.py
-
-      - name: Commitar e enviar alterações
-        run: |
-          git config user.name "RafaelaSommer"
-          git config user.email "camilaerafaelagoncalves@hotmail.com"
-
-          git add README.md .github/settings.json
-
-          if git diff --cached --quiet; then
-            echo "Nenhuma alteração para commit"
-            exit 0
-          fi
-
-          git commit -m "Atualização automática do README"
-          git push
+          echo "🚫 GitHub Actions desativado"
+          echo "Nenhuma ação será executada"
