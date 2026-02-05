@@ -4,16 +4,33 @@ import json
 import re
 import os
 from collections import Counter
-import sys
 
+# ==============================
+# 🔕 CONTROLE DE EXECUÇÃO
+# ==============================
+ATIVO = False  # ⬅️ mude para True para reativar
+
+if not ATIVO:
+    print("⛔ Script desativado temporariamente.")
+    exit(0)
+
+# ==============================
+# Configurações
+# ==============================
 USERNAME = "RafaelaSommer"
 README_PATH = "README.md"
 SETTINGS_PATH = ".github/settings.json"
 TOKEN = os.getenv("GITHUB_TOKEN")
-
 BRAZIL_TZ = timezone(timedelta(hours=-3))
 TZ_LABEL = "Horário de Brasília"
 
+# Horário atual
+now_utc = datetime.now(timezone.utc)
+now_brazil = now_utc.astimezone(BRAZIL_TZ)
+
+# ==============================
+# Carrega configurações existentes
+# ==============================
 def load_settings(path):
     if not os.path.exists(path):
         return {}
@@ -26,16 +43,16 @@ def load_settings(path):
 
 settings = load_settings(SETTINGS_PATH)
 
-if settings.get("enabled") is False:
-    sys.exit()
-
-now_utc = datetime.now(timezone.utc)
-now_brazil = now_utc.astimezone(BRAZIL_TZ)
-
+# ==============================
+# Cabeçalhos para API GitHub
+# ==============================
 headers = {"Accept": "application/vnd.github+json"}
 if TOKEN:
     headers["Authorization"] = f"Bearer {TOKEN}"
 
+# ==============================
+# Pega todos os repositórios
+# ==============================
 repos = []
 page = 1
 while True:
@@ -50,12 +67,11 @@ while True:
     repos.extend(batch)
     page += 1
 
+# ==============================
+# Estatísticas
+# ==============================
 total_projects = len(repos)
-
-languages = Counter()
-for repo in repos:
-    if repo.get("language"):
-        languages[repo["language"]] += 1
+languages = Counter(repo["language"] for repo in repos if repo.get("language"))
 
 lang_lines = "<br>\n".join(
     f"• {lang}: {count}" for lang, count in languages.most_common()
@@ -63,17 +79,19 @@ lang_lines = "<br>\n".join(
 
 last_update = now_brazil.strftime("%d/%m/%Y %H:%M:%S")
 
+# Próxima atualização prevista (exibição apenas)
 next_min = now_brazil + timedelta(minutes=25)
 next_max = now_brazil + timedelta(minutes=45)
-
 next_window_str = (
     f"{next_min.strftime('%d/%m/%Y')} "
     f"entre {next_min.strftime('%H:%M')} "
     f"e {next_max.strftime('%H:%M')}"
 )
 
+# ==============================
+# Atualiza settings.json
+# ==============================
 settings.update({
-    "enabled": True,
     "username": USERNAME,
     "total_projects": total_projects,
     "languages": dict(languages),
@@ -86,6 +104,9 @@ os.makedirs(".github", exist_ok=True)
 with open(SETTINGS_PATH, "w", encoding="utf-8") as f:
     json.dump(settings, f, indent=2, ensure_ascii=False)
 
+# ==============================
+# Atualiza README.md
+# ==============================
 info_block = (
     "<!-- INFO-START -->\n"
     "📌 <strong>Últimas Atualizações</strong><br>\n"
@@ -103,7 +124,6 @@ with open(README_PATH, "r", encoding="utf-8") as f:
     content = f.read()
 
 pattern = r"<!-- INFO-START -->.*?<!-- INFO-END -->"
-
 if re.search(pattern, content, flags=re.DOTALL):
     content = re.sub(pattern, info_block, content, flags=re.DOTALL)
 else:
