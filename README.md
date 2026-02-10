@@ -24,6 +24,7 @@ Ele coleta informações do próprio GitHub e mantém o README sempre atualizado
 - **Requests**
 - **JSON**
 - **Markdown**
+- **Node.js**
 
 ---
 
@@ -94,7 +95,7 @@ Workflows que executam o script automaticamente.
 🔄 <strong>Atualização automática:</strong> GitHub Actions<br>
 
 ⏱️ <strong>Última atualização:</strong><br>
-• 10/02/2026 16:41 (Horário de Brasília)<br>
+• 10/02/2026 16:58 (Horário de Brasília)<br>
 
 🔮 <strong>Próxima atualização prevista:</strong><br>
 • 10/02/2026 17:00 (Horário de Brasília)<br>
