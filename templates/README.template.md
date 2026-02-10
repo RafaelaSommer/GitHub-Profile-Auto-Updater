@@ -24,6 +24,7 @@ Ele coleta informações do próprio GitHub e mantém o README sempre atualizado
 - **Requests**
 - **JSON**
 - **Markdown**
+- **Node.js**
 
 ---
 
