@@ -1,0 +1,25 @@
+{
+  "name": "github-profile-auto-updater",
+  "version": "1.0.0",
+  "description": "Projeto em **Python** que atualiza automaticamente o README do perfil do GitHub usando **GitHub Actions**.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/RafaelaSommer/GitHub-Profile-Auto-Updater.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/RafaelaSommer/GitHub-Profile-Auto-Updater/issues"
+  },
+  "homepage": "https://github.com/RafaelaSommer/GitHub-Profile-Auto-Updater#readme",
+  "dependencies": {
+    "axios": "^1.13.5",
+    "luxon": "^3.7.2"
+  }
+}
