@@ -105,7 +105,7 @@ Workflows que executam o script automaticamente.
 ## ▶️ Executar Manualmente
 
 1. Vá até a aba **Actions** do repositório  
-2. Selecione o workflow **Update Profile README**  
+2. Selecione o workflow **Update README**  
 3. Clique em **Run workflow**  
 
 ---
