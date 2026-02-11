@@ -18,7 +18,6 @@ Ele coleta informações do próprio GitHub e mantém o README sempre atualizado
 
 ## 🛠️ Tecnologias Utilizadas
 
-- **Python 3.11**
 - **GitHub Actions**
 - **GitHub REST API**
 - **Requests**
