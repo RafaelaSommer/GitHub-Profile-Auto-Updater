@@ -17,7 +17,7 @@ if (UPDATE_HOURS.length === 0) {
   process.exit(1);
 }
 
-// Brasil UTC-3 → UTC = +3
+// Brasil UTC-3 → UTC
 const toUTC = hour => (hour + 3) % 24;
 
 const cronLines = UPDATE_HOURS
