@@ -2,6 +2,7 @@
 
 const fs = require("fs");
 const path = require("path");
+const { DateTime } = require("luxon");
 
 const settingsPath = path.join(__dirname, "../.github/settings.json");
 const workflowPath = path.join(
@@ -10,15 +11,26 @@ const workflowPath = path.join(
 );
 
 const settings = JSON.parse(fs.readFileSync(settingsPath, "utf8"));
-const UPDATE_HOURS = settings.update_hours || [];
+const UPDATE_HOURS =
+  settings.update_hours ||
+  Array.from({ length: 24 }, (_, i) => i).filter(h => h % 2 === 0);
 
-if (UPDATE_HOURS.length === 0) {
-  console.error("❌ update_hours está vazio no settings.json");
+if (!UPDATE_HOURS.length) {
+  console.error("❌ update_hours vazio");
   process.exit(1);
 }
 
-// Brasil UTC-3 → UTC
-const toUTC = hour => (hour + 3) % 24;
+/* ===============================
+   CONVERSÃO BR → UTC (SEGURA)
+================================= */
+function toUTC(hour) {
+  const brTime = DateTime.fromObject(
+    { hour, minute: 0 },
+    { zone: settings.timezone || "America/Sao_Paulo" }
+  );
+
+  return brTime.toUTC().hour;
+}
 
 const cronLines = UPDATE_HOURS
   .sort((a, b) => a - b)
@@ -53,13 +65,13 @@ jobs:
           git config user.name "RafaelaSommer"
           git config user.email "camilaerafaelagoncalves@hotmail.com"
           git add README.md
-          git commit -m "chore: atualização automática do README" || echo "Nada para commitar"
+          git commit -m "Atualização automática do README" || echo "Nada para commitar"
           git push
 `;
 
 fs.writeFileSync(workflowPath, workflow, "utf8");
 
-console.log("✅ Workflow gerado com sucesso");
+console.log("✅ Workflow gerado e sincronizado com timezone real");
 console.log("🇧🇷 Horários Brasil:", UPDATE_HOURS.join(", "));
 console.log(
   "🌍 Horários UTC:",

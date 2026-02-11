@@ -18,7 +18,6 @@ Ele coleta informações do próprio GitHub e mantém o README sempre atualizado
 
 ## 🛠️ Tecnologias Utilizadas
 
-- **Python 3.11**
 - **GitHub Actions**
 - **GitHub REST API**
 - **Requests**
@@ -87,18 +86,15 @@ Workflows que executam o script automaticamente.
 
 ## 📊 Última Atualização Automática
 
-### 📌 Últimas Atualizações
-
+📌 <strong>Últimas Atualizações</strong><br>
 📊 <strong>Total de projetos:</strong> 8<br>
 🧠 <strong>Projetos por linguagem:</strong><br>
-• Python: 3<br>• C#: 1<br>
+![Other](https://img.shields.io/badge/Other-4-lightgrey) ![Python](https://img.shields.io/badge/Python-3-3572A5) ![C#](https://img.shields.io/badge/C%23-1-178600)<br>
 🔄 <strong>Atualização automática:</strong> GitHub Actions<br>
-
 ⏱️ <strong>Última atualização:</strong><br>
-• 11/02/2026 13:56 (Horário de Brasília)<br>
-
+• 11/02/2026 16:24 (Horário de Brasília)<br>
 🔮 <strong>Próxima atualização prevista:</strong><br>
-• 11/02/2026 15:00 (Horário de Brasília)<br>
+• 11/02/2026 18:00 (Horário de Brasília)<br>
 
 ---
 

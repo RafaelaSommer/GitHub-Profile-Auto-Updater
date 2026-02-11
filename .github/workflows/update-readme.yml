@@ -38,5 +38,5 @@ jobs:
           git config user.name "RafaelaSommer"
           git config user.email "camilaerafaelagoncalves@hotmail.com"
           git add README.md
-          git commit -m "chore: atualização automática do README" || echo "Nada para commitar"
+          git commit -m "Atualização automática do README" || echo "Nada para commitar"
           git push
