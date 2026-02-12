@@ -87,14 +87,7 @@ Workflows que executam o script automaticamente.
 ## 📊 Última Atualização Automática
 
 📌 <strong>Últimas Atualizações</strong><br>
-📊 <strong>Total de projetos:</strong> 3<br>
-🧠 <strong>Projetos por linguagem:</strong><br>
-![Python](https://img.shields.io/badge/Python-3-blue)<br>
-🔄 <strong>Atualização automática:</strong> GitHub Actions<br>
-⏱️ <strong>Última atualização:</strong><br>
-• {last_update_str} (Horário de Brasília)<br>
-🔮 <strong>Próxima atualização prevista:</strong><br>
-• 12/02/2026 18:00 (Horário de Brasília)<br>
+
 
 ---
 

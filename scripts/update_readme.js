@@ -6,28 +6,45 @@ const axios = require("axios");
 const { DateTime } = require("luxon");
 
 /* ===============================
-   CAMINHOS
+   CONFIGURAÇÃO DE CAMINHOS
 ================================= */
 
-const settingsPath = path.join(__dirname, "../.github/settings.json");
+// path.resolve garante que o caminho seja absoluto e funcione em qualquer SO
+const settingsPath = path.resolve(__dirname, "..", ".git", "settings.json");
 
 if (!fs.existsSync(settingsPath)) {
-  console.error("❌ settings.json não encontrado");
+  console.error(`❌ Erro: settings.json não encontrado!`);
+  console.error(`Caminho tentado: ${settingsPath}`);
   process.exit(1);
 }
 
+// Lendo configurações
 const settings = JSON.parse(fs.readFileSync(settingsPath, "utf8"));
 
 const GITHUB_USER = settings.github_user;
 const TIMEZONE = settings.timezone || "America/Sao_Paulo";
-const UPDATE_HOURS = settings.update_hours || [8, 12, 16, 20];
+const UPDATE_HOURS = settings.update_hours || [0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22];
 
 const README_PATH = path.join(__dirname, "../README.md");
 const TEMPLATE_PATH = path.join(__dirname, "../templates/README.template.md");
 const LAST_RUN_PATH = path.join(__dirname, "../.last-run.json");
 
 /* ===============================
-   BUSCA REPOSITÓRIOS (SEM 403)
+   MAPA DE CORES PARA LINGUAGENS
+================================= */
+
+const languageColors = {
+  JavaScript: "f1e05a", TypeScript: "3178c6", Python: "3572A5",
+  Java: "b07219", "C#": "178600", PHP: "4F5D95",
+  Go: "00ADD8", Rust: "dea584", Kotlin: "A97BFF",
+  Swift: "ffac45", Dart: "00B4AB", Ruby: "701516",
+  C: "555555", "C++": "f34b7d", HTML: "e34c26",
+  CSS: "563d7c", Shell: "89e051", SQL: "e38c00",
+  Other: "6c757d"
+};
+
+/* ===============================
+   BUSCA REPOSITÓRIOS
 ================================= */
 
 async function fetchRepos() {
@@ -41,40 +58,35 @@ async function fetchRepos() {
 
   if (process.env.GITHUB_TOKEN) {
     headers.Authorization = `Bearer ${process.env.GITHUB_TOKEN}`;
-    console.log("🔐 Autenticado via GITHUB_TOKEN automático");
-  } else {
-    console.log("⚠ Executando sem autenticação (rate limit baixo)");
   }
 
   const baseURL = `https://api.github.com/users/${GITHUB_USER}/repos`;
 
-  while (true) {
-    const { data } = await axios.get(baseURL, {
-      params: {
-        per_page: 100,
-        page,
-        sort: "updated"
-      },
-      headers
-    });
+  try {
+    while (true) {
+      const { data } = await axios.get(baseURL, {
+        params: { per_page: 100, page, sort: "updated" },
+        headers
+      });
 
-    if (!data.length) break;
+      if (!data.length) break;
 
-    // Ignora forks
-    const filtered = data.filter(repo => !repo.fork);
-
-    repos.push(...filtered);
-    page++;
+      const filtered = data.filter(repo => !repo.fork);
+      repos.push(...filtered);
+      page++;
+    }
+    return repos;
+  } catch (error) {
+    console.error("❌ Erro na API do GitHub:", error.message);
+    throw error;
   }
-
-  return repos;
 }
 
 /* ===============================
-   BADGES DE LINGUAGEM
+   GERADOR DE CONTEÚDO DINÂMICO
 ================================= */
 
-function generateLanguageBadges(repos) {
+function generateLanguageLines(repos) {
   const map = {};
 
   repos.forEach(repo => {
@@ -84,105 +96,82 @@ function generateLanguageBadges(repos) {
 
   return Object.entries(map)
     .sort((a, b) => b[1] - a[1])
-    .map(([lang, count]) =>
-      `![${lang}](https://img.shields.io/badge/${encodeURIComponent(
-        lang
-      )}-${count}-blue)`
-    )
+    .map(([lang, count]) => {
+      const color = languageColors[lang] || languageColors["Other"];
+      return `![${lang}](https://img.shields.io/badge/${encodeURIComponent(lang)}-${count}-${color}?style=flat-square)`;
+    })
     .join(" ");
 }
 
 /* ===============================
-   CONTROLE DE EXECUÇÃO
+   LÓGICA DE AGENDAMENTO
 ================================= */
 
 function shouldRun(now) {
-  if (!UPDATE_HOURS.includes(now.hour)) {
-    console.log("⏳ Fora do horário configurado");
-    return false;
-  }
+  if (process.env.MANUAL_RUN === "true") return true;
+
+  if (!UPDATE_HOURS.includes(now.hour)) return false;
 
   if (fs.existsSync(LAST_RUN_PATH)) {
     const lastRun = JSON.parse(fs.readFileSync(LAST_RUN_PATH, "utf8"));
     const lastTime = DateTime.fromISO(lastRun.timestamp).setZone(TIMEZONE);
 
     if (lastTime.hour === now.hour && lastTime.hasSame(now, "day")) {
-      console.log("⚠ Já executado neste horário");
       return false;
     }
   }
-
   return true;
 }
 
-/* ===============================
-   CALCULA PRÓXIMA ATUALIZAÇÃO
-================================= */
-
 function getNextUpdate(now) {
-  const todayHours = UPDATE_HOURS
-    .map(h => now.set({ hour: h, minute: 0, second: 0 }))
+  const upcoming = UPDATE_HOURS
+    .map(h => now.set({ hour: h, minute: 0, second: 0, millisecond: 0 }))
     .filter(time => time > now);
 
-  if (todayHours.length) {
-    return todayHours[0];
-  }
+  if (upcoming.length > 0) return upcoming[0];
 
-  const tomorrow = now.plus({ days: 1 });
-
-  return tomorrow.set({
-    hour: UPDATE_HOURS[0],
-    minute: 0,
-    second: 0
-  });
+  return now.plus({ days: 1 }).set({ hour: UPDATE_HOURS[0], minute: 0, second: 0, millisecond: 0 });
 }
 
 /* ===============================
-   ATUALIZA README
+   EXECUÇÃO PRINCIPAL
 ================================= */
 
 async function updateReadme() {
   const now = DateTime.now().setZone(TIMEZONE);
 
   if (!shouldRun(now)) {
-    process.exit(0);
+    console.log(`⏭️ Próxima atualização em: ${getNextUpdate(now).toFormat("HH:mm")}`);
+    return;
   }
 
+  console.log(`📡 Coletando dados para ${GITHUB_USER}...`);
   const repos = await fetchRepos();
 
   if (!fs.existsSync(TEMPLATE_PATH)) {
-    console.error("❌ README.template.md não encontrado");
+    console.error("❌ Erro: README.template.md não encontrado.");
     process.exit(1);
   }
 
   const template = fs.readFileSync(TEMPLATE_PATH, "utf8");
-
   const nextUpdate = getNextUpdate(now);
 
-  const content = template
-    .replace("{total_projects}", repos.length)
-    .replace("{language_lines}", generateLanguageBadges(repos))
-    .replace("{last_update}", now.toFormat("dd/MM/yyyy HH:mm"))
-    .replace(
-      "{next_update_str}",
-      nextUpdate.toFormat("dd/MM/yyyy HH:mm")
-    );
+  // Substituição das tags no Template
+  const finalContent = template
+    .replace(/{total_projects}/g, repos.length)
+    .replace(/{language_lines}/g, generateLanguageLines(repos))
+    .replace(/{last_update}/g, now.toFormat("dd/MM/yyyy HH:mm"))
+    .replace(/{next_update_str}/g, nextUpdate.toFormat("dd/MM/yyyy HH:mm"));
 
-  fs.writeFileSync(README_PATH, content);
+  fs.writeFileSync(README_PATH, finalContent);
+  
+  // Atualiza o registro da última execução
+  fs.writeFileSync(LAST_RUN_PATH, JSON.stringify({ timestamp: now.toISO() }));
 
-  fs.writeFileSync(
-    LAST_RUN_PATH,
-    JSON.stringify({ timestamp: now.toISO() })
-  );
-
-  console.log("✅ README atualizado com sucesso");
+  console.log("✅ README.md atualizado com sucesso!");
 }
 
-/* ===============================
-   EXECUÇÃO
-================================= */
-
 updateReadme().catch(err => {
-  console.error("❌ Erro:", err.response?.data || err.message);
+  console.error("❌ Erro fatal:", err.message);
   process.exit(1);
 });
