@@ -30,7 +30,7 @@ if (fs.existsSync(settingsPath)) {
    WORKFLOW YAML
 ================================= */
 
-const workflow = `name: Update README (Resilient)
+const workflow = `name: Update README
 
 on:
   schedule:

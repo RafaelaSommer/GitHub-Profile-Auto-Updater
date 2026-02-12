@@ -87,14 +87,14 @@ Workflows que executam o script automaticamente.
 ## 📊 Última Atualização Automática
 
 📌 <strong>Últimas Atualizações</strong><br>
-📊 <strong>Total de projetos:</strong> 8<br>
+📊 <strong>Total de projetos:</strong> 3<br>
 🧠 <strong>Projetos por linguagem:</strong><br>
-![Other](https://img.shields.io/badge/Other-4-lightgrey) ![Python](https://img.shields.io/badge/Python-3-3572A5) ![C#](https://img.shields.io/badge/C%23-1-178600)<br>
+![Python](https://img.shields.io/badge/Python-3-blue)<br>
 🔄 <strong>Atualização automática:</strong> GitHub Actions<br>
 ⏱️ <strong>Última atualização:</strong><br>
-• 12/02/2026 14:51 (Horário de Brasília)<br>
+• {last_update_str} (Horário de Brasília)<br>
 🔮 <strong>Próxima atualização prevista:</strong><br>
-• 12/02/2026 16:00 (Horário de Brasília)<br>
+• 12/02/2026 18:00 (Horário de Brasília)<br>
 
 ---
 
@@ -117,14 +117,10 @@ Ideal para:
 ---
 
 ## 👩‍💻 Autora  
-### Rafaela Sommer  
 
 [![LinkedIn](https://img.shields.io/badge/LinkedIn-Rafaela%20Sommer-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/rafaelasommergon%C3%A7alves16/)
 [![GitHub](https://img.shields.io/badge/GitHub-RafaelaSommer-181717?style=for-the-badge&logo=github)](https://github.com/RafaelaSommer)
-
-### 🔎 Repositório do Projeto
-
-[![Repo](https://img.shields.io/badge/Repositório-GitHub--Profile--Auto--Updater-24292e?style=for-the-badge&logo=github)](https://github.com/RafaelaSommer/RafaelaSommer.git)
+[![WhatsApp](https://img.shields.io/badge/WhatsApp-Entre%20em%20contato-25D366?style=for-the-badge&logo=whatsapp&logoColor=white)](https://wa.me/5519971015465)
 
 ---
 
