@@ -2,7 +2,10 @@
 
 const fs = require("fs");
 const path = require("path");
-const { DateTime } = require("luxon");
+
+/* ===============================
+   CAMINHOS
+================================= */
 
 const settingsPath = path.join(__dirname, "../.github/settings.json");
 const workflowPath = path.join(
@@ -10,70 +13,75 @@ const workflowPath = path.join(
   "../.github/workflows/update-readme.yml"
 );
 
-const settings = JSON.parse(fs.readFileSync(settingsPath, "utf8"));
-const UPDATE_HOURS =
-  settings.update_hours ||
-  Array.from({ length: 24 }, (_, i) => i).filter(h => h % 2 === 0);
+/* ===============================
+   CARREGA SETTINGS (OPCIONAL)
+================================= */
 
-if (!UPDATE_HOURS.length) {
-  console.error("❌ update_hours vazio");
-  process.exit(1);
+let cronSchedule = "*/15 * * * *"; // padrão: a cada 15 minutos
+
+if (fs.existsSync(settingsPath)) {
+  const settings = JSON.parse(fs.readFileSync(settingsPath, "utf8"));
+  if (settings.cron) {
+    cronSchedule = settings.cron;
+  }
 }
 
 /* ===============================
-   CONVERSÃO BR → UTC (SEGURA)
+   WORKFLOW YAML
 ================================= */
-function toUTC(hour) {
-  const brTime = DateTime.fromObject(
-    { hour, minute: 0 },
-    { zone: settings.timezone || "America/Sao_Paulo" }
-  );
 
-  return brTime.toUTC().hour;
-}
-
-const cronLines = UPDATE_HOURS
-  .sort((a, b) => a - b)
-  .map(hour => `    - cron: "0 ${toUTC(hour)} * * *"`);
-
-const workflow = `name: Update README
+const workflow = `name: Update README (Resilient)
 
 on:
   schedule:
-${cronLines.join("\n")}
+    - cron: "${cronSchedule}"
   workflow_dispatch:
 
 permissions:
   contents: write
+
+concurrency:
+  group: update-readme
+  cancel-in-progress: false
 
 jobs:
   update-readme:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
 
-      - uses: actions/setup-node@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
         with:
           node-version: "20"
+          cache: "npm"
 
-      - run: npm ci
+      - name: Install dependencies
+        run: npm ci
 
-      - run: node scripts/update_readme.js
+      - name: Run update script
+        run: node scripts/update_readme.js
+        env:
+          GITHUB_TOKEN: \${{ secrets.GITHUB_TOKEN }}
 
-      - run: |
+      - name: Commit README if changed
+        run: |
           git config user.name "RafaelaSommer"
           git config user.email "camilaerafaelagoncalves@hotmail.com"
-          git add README.md
-          git commit -m "Atualização automática do README" || echo "Nada para commitar"
+          git add README.md || true
+          git diff --cached --quiet || git commit -m "🤖 Atualização Automática do README"
           git push
 `;
 
+/* ===============================
+   CRIA PASTA + ARQUIVO
+================================= */
+
+fs.mkdirSync(path.dirname(workflowPath), { recursive: true });
 fs.writeFileSync(workflowPath, workflow, "utf8");
 
-console.log("✅ Workflow gerado e sincronizado com timezone real");
-console.log("🇧🇷 Horários Brasil:", UPDATE_HOURS.join(", "));
-console.log(
-  "🌍 Horários UTC:",
-  UPDATE_HOURS.map(toUTC).join(", ")
-);
+console.log("✅ Workflow gerado com sucesso!");
+console.log(`🕒 Cron configurado: ${cronSchedule}`);
+console.log("🚀 Atualização automática ativada.");

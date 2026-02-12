@@ -1,23 +1,28 @@
 {
   "name": "github-profile-auto-updater",
   "version": "1.0.0",
-  "description": "Projeto em **Python** que atualiza automaticamente o README do perfil do GitHub usando **GitHub Actions**.",
-  "main": "index.js",
+  "description": "Automated GitHub profile README updater using Node.js and GitHub Actions.",
+  "main": "scripts/update_readme.js",
+  "type": "commonjs",
+  "private": false,
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "generate": "node scripts/generate-cron.js",
+    "update": "node scripts/update_readme.js",
+    "start": "node scripts/update_readme.js"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/RafaelaSommer/GitHub-Profile-Auto-Updater.git"
+    "url": "https://github.com/RafaelaSommer/GitHub-Profile-Auto-Updater.git"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "type": "commonjs",
+  "author": "Rafaela Sommer",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/RafaelaSommer/GitHub-Profile-Auto-Updater/issues"
   },
   "homepage": "https://github.com/RafaelaSommer/GitHub-Profile-Auto-Updater#readme",
+  "engines": {
+    "node": ">=18"
+  },
   "dependencies": {
     "axios": "^1.13.5",
     "luxon": "^3.7.2"

@@ -1,24 +1,63 @@
-.venv/
-__pycache__/
-*.pyc
-.env
+# ===============================
 # Python
+# ===============================
+
 __pycache__/
 *.pyc
 *.pyo
 *.pyd
+*.sqlite3
+*.db
 
-# Virtual environment
 .venv/
 venv/
+env/
+ENV/
 
 # Ambiente
 .env
+.env.*
 
-# Sistema
+# ===============================
+# Node
+# ===============================
+
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+
+# ===============================
+# Logs
+# ===============================
+
+*.log
+
+# ===============================
+# Sistema Operacional
+# ===============================
+
 .DS_Store
 Thumbs.db
 
-# IDE
+# ===============================
+# VS Code / IDE
+# ===============================
+
 .vscode/
 .idea/
+
+# ===============================
+# GitHub Actions temporários
+# ===============================
+
+.github/.last-run.json
+
+# ===============================
+# Build / Coverage
+# ===============================
+
+dist/
+build/
+coverage/

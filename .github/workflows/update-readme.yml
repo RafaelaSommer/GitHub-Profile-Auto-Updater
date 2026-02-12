@@ -1,42 +1,43 @@
-name: Update README
+name: Update README (Resilient)
 
 on:
   schedule:
-    - cron: "0 3 * * *"
-    - cron: "0 5 * * *"
-    - cron: "0 7 * * *"
-    - cron: "0 9 * * *"
-    - cron: "0 11 * * *"
-    - cron: "0 13 * * *"
-    - cron: "0 15 * * *"
-    - cron: "0 17 * * *"
-    - cron: "0 19 * * *"
-    - cron: "0 21 * * *"
-    - cron: "0 23 * * *"
-    - cron: "0 1 * * *"
+    - cron: "*/15 * * * *"
   workflow_dispatch:
 
 permissions:
   contents: write
+
+concurrency:
+  group: update-readme
+  cancel-in-progress: false
 
 jobs:
   update-readme:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
 
-      - uses: actions/setup-node@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
         with:
           node-version: "20"
+          cache: "npm"
 
-      - run: npm ci
+      - name: Install dependencies
+        run: npm ci
 
-      - run: node scripts/update_readme.js
+      - name: Run update script
+        run: node scripts/update_readme.js
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - run: |
+      - name: Commit README if changed
+        run: |
           git config user.name "RafaelaSommer"
           git config user.email "camilaerafaelagoncalves@hotmail.com"
-          git add README.md
-          git commit -m "Atualização automática do README" || echo "Nada para commitar"
+          git add README.md || true
+          git diff --cached --quiet || git commit -m "🤖 Atualização Automática do README"
           git push

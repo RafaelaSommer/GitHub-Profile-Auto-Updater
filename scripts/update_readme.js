@@ -5,93 +5,61 @@ const path = require("path");
 const axios = require("axios");
 const { DateTime } = require("luxon");
 
+/* ===============================
+   CARREGA SETTINGS
+================================= */
+
 const settingsPath = path.join(__dirname, "../.github/settings.json");
+
+if (!fs.existsSync(settingsPath)) {
+  console.error("❌ settings.json não encontrado");
+  process.exit(1);
+}
+
 const settings = JSON.parse(fs.readFileSync(settingsPath, "utf8"));
 
 const GITHUB_USER = settings.github_user;
 const TIMEZONE = settings.timezone || "America/Sao_Paulo";
-const UPDATE_HOURS =
-  settings.update_hours ||
-  Array.from({ length: 24 }, (_, i) => i).filter(h => h % 2 === 0);
-
-const GRACE_MINUTES = settings.grace_minutes ?? 15;
+const UPDATE_HOURS = settings.update_hours || [8, 12, 16, 20];
 
 const README_PATH = path.join(__dirname, "../README.md");
 const TEMPLATE_PATH = path.join(__dirname, "../templates/README.template.md");
-
-/* ===============================
-   CORES PARA +50 LINGUAGENS
-================================= */
-const LANGUAGE_COLORS = {
-  JavaScript: "f1e05a",
-  TypeScript: "2b7489",
-  Python: "3572A5",
-  Java: "b07219",
-  HTML: "e34c26",
-  CSS: "563d7c",
-  C: "555555",
-  "C++": "f34b7d",
-  "C#": "178600",
-  Ruby: "701516",
-  PHP: "4F5D95",
-  Go: "00ADD8",
-  Shell: "89e051",
-  Rust: "dea584",
-  Kotlin: "F18E33",
-  Swift: "ffac45",
-  Scala: "c22d40",
-  Dart: "00B4AB",
-  Lua: "000080",
-  "Objective-C": "438eff",
-  PowerShell: "012456",
-  R: "198CE7",
-  Elixir: "6e4a7e",
-  Haskell: "5e5086",
-  Perl: "0298c3",
-  Vue: "41b883",
-  React: "61dafb",
-  Angular: "dd1b16",
-  Sass: "cc6699",
-  Less: "1d365d",
-  D: "ba595e",
-  CoffeeScript: "244776",
-  Matlab: "e16737",
-  Groovy: "e69f56",
-  VimL: "199f4b",
-  Ada: "02f88c",
-  Assembly: "6E4C13",
-  "F#": "b845fc",
-  Fortran: "4d41b1",
-  Crystal: "000100",
-  OCaml: "3be133",
-  Scheme: "1e4aec",
-  Prolog: "74283c",
-  Julia: "a270ba",
-  Elm: "60B5CC",
-  Solidity: "AA6746",
-  Terraform: "6f42c1",
-  Makefile: "427819",
-  Dockerfile: "384d54",
-  Other: "lightgrey"
-};
+const LAST_RUN_PATH = path.join(__dirname, "../.last-run.json");
 
 /* ===============================
    BUSCA REPOSITÓRIOS
 ================================= */
-async function fetchRepos(user) {
+
+async function fetchRepos() {
   const repos = [];
   let page = 1;
 
+  const headers = {
+    "User-Agent": "GitHub-Profile-Updater",
+    Accept: "application/vnd.github+json"
+  };
+
+  if (process.env.GITHUB_TOKEN) {
+    headers.Authorization = `Bearer ${process.env.GITHUB_TOKEN}`;
+    console.log("🔐 Autenticado via GITHUB_TOKEN automático");
+  } else {
+    console.log("⚠ Executando sem autenticação (rate limit baixo)");
+  }
+
+  const baseURL = process.env.GITHUB_TOKEN
+    ? "https://api.github.com/user/repos"
+    : `https://api.github.com/users/${GITHUB_USER}/repos`;
+
   while (true) {
-    const { data } = await axios.get(
-      `https://api.github.com/users/${user}/repos`,
-      {
-        params: { per_page: 100, page },
-        headers: { "User-Agent": "GitHub-Profile-Updater" }
-      }
-    );
+    const { data } = await axios.get(baseURL, {
+      params: process.env.GITHUB_TOKEN
+        ? { per_page: 100, page, affiliation: "owner" }
+        : { per_page: 100, page },
+      headers
+    });
 
     if (!data.length) break;
+
     repos.push(...data);
     page++;
   }
@@ -102,6 +70,7 @@ async function fetchRepos(user) {
 /* ===============================
    BADGES DE LINGUAGEM
 ================================= */
+
 function generateLanguageBadges(repos) {
   const map = {};
 
@@ -112,71 +81,75 @@ function generateLanguageBadges(repos) {
 
   return Object.entries(map)
     .sort((a, b) => b[1] - a[1])
-    .map(([lang, count]) => {
-      const color = LANGUAGE_COLORS[lang] || LANGUAGE_COLORS["Other"];
-      return `![${lang}](https://img.shields.io/badge/${encodeURIComponent(
+    .map(([lang, count]) =>
+      `![${lang}](https://img.shields.io/badge/${encodeURIComponent(
         lang
-      )}-${count}-${color})`;
-    })
+      )}-${count}-blue)`
+    )
     .join(" ");
 }
 
 /* ===============================
-   CALCULA PRÓXIMA EXECUÇÃO
+   CONTROLE RESILIENTE
 ================================= */
-function getNextUpdate(now) {
-  for (const hour of UPDATE_HOURS) {
-    const scheduled = now.set({
-      hour,
-      minute: 0,
-      second: 0,
-      millisecond: 0
-    });
 
-    const diff = scheduled.diff(now, "minutes").minutes;
+function shouldRun(now) {
+  if (!UPDATE_HOURS.includes(now.hour)) {
+    console.log("⏳ Fora do horário configurado");
+    return false;
+  }
 
-    // Se está dentro da tolerância, já considera próxima execução
-    if (diff >= -GRACE_MINUTES && diff < 0) {
-      return scheduled.plus({ hours: 2 });
-    }
+  if (fs.existsSync(LAST_RUN_PATH)) {
+    const lastRun = JSON.parse(fs.readFileSync(LAST_RUN_PATH, "utf8"));
+    const lastTime = DateTime.fromISO(lastRun.timestamp).setZone(TIMEZONE);
 
-    if (scheduled > now) {
-      return scheduled;
+    if (lastTime.hour === now.hour && lastTime.hasSame(now, "day")) {
+      console.log("⚠ Já executado neste horário");
+      return false;
     }
   }
 
-  // Próximo dia
-  return now
-    .plus({ days: 1 })
-    .set({
-      hour: UPDATE_HOURS[0],
-      minute: 0,
-      second: 0,
-      millisecond: 0
-    });
+  return true;
 }
 
 /* ===============================
    ATUALIZA README
 ================================= */
-async function updateReadme() {
-  const repos = await fetchRepos(GITHUB_USER);
 
+async function updateReadme() {
   const now = DateTime.now().setZone(TIMEZONE);
-  const next = getNextUpdate(now);
+
+  if (!shouldRun(now)) {
+    process.exit(0);
+  }
+
+  const repos = await fetchRepos();
+
+  if (!fs.existsSync(TEMPLATE_PATH)) {
+    console.error("❌ README.template.md não encontrado");
+    process.exit(1);
+  }
 
   const template = fs.readFileSync(TEMPLATE_PATH, "utf8");
 
   const content = template
     .replace("{total_projects}", repos.length)
     .replace("{language_lines}", generateLanguageBadges(repos))
-    .replace("{last_update_str}", now.toFormat("dd/MM/yyyy HH:mm"))
-    .replace("{next_update_str}", next.toFormat("dd/MM/yyyy HH:mm"));
+    .replace("{last_update}", now.toFormat("dd/MM/yyyy HH:mm"));
 
   fs.writeFileSync(README_PATH, content);
 
-  console.log("✅ README atualizado e sincronizado com GitHub Actions");
+  fs.writeFileSync(
+    LAST_RUN_PATH,
+    JSON.stringify({ timestamp: now.toISO() })
+  );
+
+  console.log("✅ README atualizado com sucesso");
 }
+
+/* ===============================
+   EXECUÇÃO
+================================= */
 
 updateReadme().catch(err => {
   console.error("❌ Erro:", err.message);
