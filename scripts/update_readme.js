@@ -6,7 +6,7 @@ const axios = require("axios");
 const { DateTime } = require("luxon");
 
 /* ===============================
-   CARREGA SETTINGS
+   CAMINHOS
 ================================= */
 
 const settingsPath = path.join(__dirname, "../.github/settings.json");
@@ -27,7 +27,7 @@ const TEMPLATE_PATH = path.join(__dirname, "../templates/README.template.md");
 const LAST_RUN_PATH = path.join(__dirname, "../.last-run.json");
 
 /* ===============================
-   BUSCA REPOSITÓRIOS
+   BUSCA REPOSITÓRIOS (SEM 403)
 ================================= */
 
 async function fetchRepos() {
@@ -46,21 +46,24 @@ async function fetchRepos() {
     console.log("⚠ Executando sem autenticação (rate limit baixo)");
   }
 
-  const baseURL = process.env.GITHUB_TOKEN
-    ? "https://api.github.com/user/repos"
-    : `https://api.github.com/users/${GITHUB_USER}/repos`;
+  const baseURL = `https://api.github.com/users/${GITHUB_USER}/repos`;
 
   while (true) {
     const { data } = await axios.get(baseURL, {
-      params: process.env.GITHUB_TOKEN
-        ? { per_page: 100, page, affiliation: "owner" }
-        : { per_page: 100, page },
+      params: {
+        per_page: 100,
+        page,
+        sort: "updated"
+      },
       headers
     });
 
     if (!data.length) break;
 
-    repos.push(...data);
+    // Ignora forks
+    const filtered = data.filter(repo => !repo.fork);
+
+    repos.push(...filtered);
     page++;
   }
 
@@ -90,7 +93,7 @@ function generateLanguageBadges(repos) {
 }
 
 /* ===============================
-   CONTROLE RESILIENTE
+   CONTROLE DE EXECUÇÃO
 ================================= */
 
 function shouldRun(now) {
@@ -113,6 +116,28 @@ function shouldRun(now) {
 }
 
 /* ===============================
+   CALCULA PRÓXIMA ATUALIZAÇÃO
+================================= */
+
+function getNextUpdate(now) {
+  const todayHours = UPDATE_HOURS
+    .map(h => now.set({ hour: h, minute: 0, second: 0 }))
+    .filter(time => time > now);
+
+  if (todayHours.length) {
+    return todayHours[0];
+  }
+
+  const tomorrow = now.plus({ days: 1 });
+
+  return tomorrow.set({
+    hour: UPDATE_HOURS[0],
+    minute: 0,
+    second: 0
+  });
+}
+
+/* ===============================
    ATUALIZA README
 ================================= */
 
@@ -132,10 +157,16 @@ async function updateReadme() {
 
   const template = fs.readFileSync(TEMPLATE_PATH, "utf8");
 
+  const nextUpdate = getNextUpdate(now);
+
   const content = template
     .replace("{total_projects}", repos.length)
     .replace("{language_lines}", generateLanguageBadges(repos))
-    .replace("{last_update}", now.toFormat("dd/MM/yyyy HH:mm"));
+    .replace("{last_update}", now.toFormat("dd/MM/yyyy HH:mm"))
+    .replace(
+      "{next_update_str}",
+      nextUpdate.toFormat("dd/MM/yyyy HH:mm")
+    );
 
   fs.writeFileSync(README_PATH, content);
 
@@ -152,6 +183,6 @@ async function updateReadme() {
 ================================= */
 
 updateReadme().catch(err => {
-  console.error("❌ Erro:", err.message);
+  console.error("❌ Erro:", err.response?.data || err.message);
   process.exit(1);
 });
