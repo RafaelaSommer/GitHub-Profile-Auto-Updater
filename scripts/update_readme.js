@@ -162,7 +162,7 @@ async function updateReadme() {
   const content = template
     .replace("{total_projects}", repos.length)
     .replace("{language_lines}", generateLanguageBadges(repos))
-    .replace("{last_update_str}", now.toFormat("dd/MM/yyyy HH:mm"))
+    .replace("{last_update}", now.toFormat("dd/MM/yyyy HH:mm"))
     .replace("{next_update_str}", nextUpdateStr);
 
   fs.writeFileSync(README_PATH, content);
