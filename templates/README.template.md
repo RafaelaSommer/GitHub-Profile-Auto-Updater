@@ -120,7 +120,7 @@ Ideal para:
 
 [![LinkedIn](https://img.shields.io/badge/LinkedIn-Rafaela%20Sommer-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/rafaelasommergon%C3%A7alves16/)
 [![GitHub](https://img.shields.io/badge/GitHub-RafaelaSommer-181717?style=for-the-badge&logo=github)](https://github.com/RafaelaSommer)
-[![WhatsApp](https://img.shields.io/badge/WhatsApp-+55%2019%2097101--5465-25D366?style=for-the-badge&logo=whatsapp&logoColor=white)](https://wa.me/5519971015465)
+[![WhatsApp](https://img.shields.io/badge/WhatsApp-Entre%20em%20contato-25D366?style=for-the-badge&logo=whatsapp&logoColor=white)](https://wa.me/5519971015465)
 
 ---
 
