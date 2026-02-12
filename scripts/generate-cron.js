@@ -59,7 +59,7 @@ jobs:
           cache: "npm"
 
       - name: Install dependencies
-        - run: npm install
+        run: npm install
 
       - name: Run update script
         run: node scripts/update_readme.js
