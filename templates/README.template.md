@@ -86,16 +86,22 @@ Workflows que executam o script automaticamente.
 
 ## 📊 Última Atualização Automática
 
-📌 <strong>Últimas Atualizações</strong><br>
+📌 **Últimas Atualizações**  
+📦 **Total de projetos:** {total_projects}  
 
-📦 <strong>Total de projetos:</strong> {total_projects}<br><br>
+🧠 **Projetos por linguagem:**  
+{language_lines}
 
-🧠 <strong>Linguagens utilizadas:</strong><br><br>
-{language_lines}<br><br>
+⚙️ **Atualização automática:** GitHub Actions (a cada 15 minutos)
 
-⏱️ <strong>Última atualização:</strong> {last_update} (Horário de Brasília)<br>
-🔮 <strong>Próxima atualização:</strong> {next_update_str} (Horário de Brasília)<br>
-🔄 <strong>Atualização automática:</strong> GitHub Actions<br>
+🕒 **Última atualização:**  
+{last_update} (Horário de Brasília)
+
+🔄 **Próxima atualização automática (15 min):**  
+{next_update_15} (Horário de Brasília)
+
+⏭ **Próxima atualização principal:**  
+{next_update_main} (Horário de Brasília)
 
 ---
 

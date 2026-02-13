@@ -17,8 +17,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout
+      - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
 
       - name: Setup Node
         uses: actions/setup-node@v4
@@ -27,17 +30,23 @@ jobs:
           cache: "npm"
 
       - name: Install dependencies
-        run: npm install
+        run: npm ci
 
       - name: Run update script
         run: node scripts/update_readme.js
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Commit README if changed
+      - name: Commit and push if changed
         run: |
-          git config user.name "RafaelaSommer"
-          git config user.email "camilaerafaelagoncalves@hotmail.com"
-          git add README.md || true
-          git diff --cached --quiet || git commit -m "🤖 Atualização Automática do README"
-          git push
+          git config --global user.name "RafaelaSommer"
+          git config --global user.email "camilaerafaelagoncalves@hotmail.com"
+
+          git add README.md
+
+          if git diff --cached --quiet; then
+            echo "Nenhuma alteração detectada."
+          else
+            git commit -m "🤖 Atualização Automática do README"
+            git push
+          fi

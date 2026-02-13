@@ -3,32 +3,22 @@
 const fs = require("fs");
 const path = require("path");
 
-/* ===============================
-   CAMINHOS
-================================= */
-
 const settingsPath = path.join(__dirname, "../.github/settings.json");
 const workflowPath = path.join(
   __dirname,
   "../.github/workflows/update-readme.yml"
 );
 
-/* ===============================
-   CARREGA SETTINGS (OPCIONAL)
-================================= */
-
-let cronSchedule = "*/15 * * * *"; // padrão: a cada 15 minutos
+// 🔹 Cron padrão: a cada 15 minutos
+let cronSchedule = "*/15 * * * *";
 
 if (fs.existsSync(settingsPath)) {
   const settings = JSON.parse(fs.readFileSync(settingsPath, "utf8"));
-  if (settings.cron) {
+
+  if (settings.cron && typeof settings.cron === "string") {
     cronSchedule = settings.cron;
   }
 }
-
-/* ===============================
-   WORKFLOW YAML
-================================= */
 
 const workflow = `name: Update README
 
@@ -49,8 +39,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout
+      - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          token: \${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
 
       - name: Setup Node
         uses: actions/setup-node@v4
@@ -59,29 +52,29 @@ jobs:
           cache: "npm"
 
       - name: Install dependencies
-        run: npm install
+        run: npm ci
 
       - name: Run update script
         run: node scripts/update_readme.js
         env:
           GITHUB_TOKEN: \${{ secrets.GITHUB_TOKEN }}
 
-      - name: Commit README if changed
+      - name: Commit and push if changed
         run: |
-          git config user.name "RafaelaSommer"
-          git config user.email "camilaerafaelagoncalves@hotmail.com"
-          git add README.md || true
-          git diff --cached --quiet || git commit -m "🤖 Atualização Automática do README"
-          git push
-`;
+          git config --global user.name "RafaelaSommer"
+          git config --global user.email "camilaerafaelagoncalves@hotmail.com"
 
-/* ===============================
-   CRIA PASTA + ARQUIVO
-================================= */
+          git add README.md
+
+          if git diff --cached --quiet; then
+            echo "Nenhuma alteração detectada."
+          else
+            git commit -m "🤖 Atualização Automática do README"
+            git push
+          fi
+`;
 
 fs.mkdirSync(path.dirname(workflowPath), { recursive: true });
 fs.writeFileSync(workflowPath, workflow, "utf8");
 
 console.log("✅ Workflow gerado com sucesso!");
-console.log(`🕒 Cron configurado: ${cronSchedule}`);
-console.log("🚀 Atualização automática ativada.");
