@@ -77,7 +77,7 @@ function generateLanguageBadges(repos) {
     Java: "b07219",
     C: "555555",
     "C++": "00599c",
-    C#: "239120",
+    "C#": "239120",
     PHP: "777bb4",
     Go: "00add8",
     Ruby: "cc342d",
@@ -91,23 +91,18 @@ function generateLanguageBadges(repos) {
     Other: "6e7681"
   };
 
-  const map = {};
+  const languageCount = {};
 
   repos.forEach(repo => {
     const lang = repo.language || "Other";
-    map[lang] = (map[lang] || 0) + 1;
+    languageCount[lang] = (languageCount[lang] || 0) + 1;
   });
 
-  return Object.entries(map)
-    .sort((a, b) => b[1] - a[1])
-    .map(([lang, count]) => {
-      const color = languageColors[lang] || "6e7681";
-
-      return `![${lang}](https://img.shields.io/badge/${encodeURIComponent(
-        lang
-      )}-${count}-${color}?style=for-the-badge)`;
-    })
-    .join(" ");
+  return Object.entries(languageCount).map(([lang, count]) => {
+    const color = languageColors[lang] || "6e7681";
+    const safeLang = lang === "C#" ? "C%23" : encodeURIComponent(lang);
+    return `![${lang}](https://img.shields.io/badge/${safeLang}-${count}-${color}?style=for-the-badge)`;
+  }).join(" ");
 }
 
 async function updateReadme() {
