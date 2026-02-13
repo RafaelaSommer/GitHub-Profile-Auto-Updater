@@ -15,6 +15,21 @@ const UPDATE_HOURS = settings.update_hours;
 const README_PATH = path.join(__dirname, "../README.md");
 const TEMPLATE_PATH = path.join(__dirname, "../templates/README.template.md");
 
+function getNextMainUpdate(now) {
+  const today = now.startOf("day");
+
+  const futureHours = UPDATE_HOURS
+    .map(hour => today.plus({ hours: hour }))
+    .filter(date => date > now);
+
+  if (futureHours.length > 0) {
+    return futureHours[0];
+  }
+
+  // se já passou todos horários do dia, pega o primeiro horário do próximo dia
+  return today.plus({ days: 1, hours: UPDATE_HOURS[0] });
+}
+
 async function fetchUser() {
   const { data } = await axios.get(
     `https://api.github.com/users/${GITHUB_USER}`,
@@ -55,6 +70,27 @@ async function fetchRepos() {
 }
 
 function generateLanguageBadges(repos) {
+  const languageColors = {
+    JavaScript: "f7df1e",
+    TypeScript: "3178c6",
+    Python: "3776ab",
+    Java: "b07219",
+    C: "555555",
+    "C++": "00599c",
+    C#: "239120",
+    PHP: "777bb4",
+    Go: "00add8",
+    Ruby: "cc342d",
+    Swift: "fa7343",
+    Kotlin: "7f52ff",
+    Rust: "dea584",
+    Dart: "0175c2",
+    Shell: "89e051",
+    HTML: "e34c26",
+    CSS: "1572b6",
+    Other: "6e7681"
+  };
+
   const map = {};
 
   repos.forEach(repo => {
@@ -64,27 +100,14 @@ function generateLanguageBadges(repos) {
 
   return Object.entries(map)
     .sort((a, b) => b[1] - a[1])
-    .map(([lang, count]) =>
-      `![${lang}](https://img.shields.io/badge/${encodeURIComponent(
+    .map(([lang, count]) => {
+      const color = languageColors[lang] || "6e7681";
+
+      return `![${lang}](https://img.shields.io/badge/${encodeURIComponent(
         lang
-      )}-${count}-2d2d2d?style=for-the-badge)`
-    )
+      )}-${count}-${color}?style=for-the-badge)`;
+    })
     .join(" ");
-}
-
-function getNextMainUpdate(now) {
-  const today = UPDATE_HOURS
-    .map(h => now.set({ hour: h, minute: 0, second: 0 }))
-    .filter(time => time > now)
-    .sort((a, b) => a - b);
-
-  if (today.length > 0) return today[0];
-
-  return now.plus({ days: 1 }).set({
-    hour: UPDATE_HOURS[0],
-    minute: 0,
-    second: 0
-  });
 }
 
 async function updateReadme() {
