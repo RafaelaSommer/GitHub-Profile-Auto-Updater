@@ -95,10 +95,10 @@ Workflows que executam o script automaticamente.
 ⚙️ **Atualização automática:** GitHub Actions (a cada 15 minutos)
 
 🕒 **Última atualização:**  
-20/02/2026 20:50 (Horário de Brasília)
+20/02/2026 22:26 (Horário de Brasília)
 
 🔄 **Próxima atualização automática (15 min):**  
-20/02/2026 21:05 (Horário de Brasília)
+20/02/2026 22:41 (Horário de Brasília)
 
 ⏭ **Próxima atualização principal:**  
 21/02/2026 08:00 (Horário de Brasília)
