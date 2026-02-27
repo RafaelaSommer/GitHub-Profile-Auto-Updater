@@ -8,7 +8,7 @@
   "scripts": {
     "generate": "node scripts/generate-cron.js",
     "update": "node scripts/update_readme.js",
-    "start": "node scripts/update_readme.js"
+    "start": "node scripts/bot-local.js"
   },
   "repository": {
     "type": "git",

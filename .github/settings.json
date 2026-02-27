@@ -1,6 +1,17 @@
 {
   "github_user": "RafaelaSommer",
   "timezone": "America/Sao_Paulo",
-  "update_hours": [8, 12, 16, 20],
-  "cron": "*/15 * * * *"
+
+  "business_hours": {
+    "start": 8,
+    "end": 18
+  },
+
+  "fixed_interval_hours": 2,
+  "enable_interval_minutes": true,
+  "interval_minutes": 20,
+  "interval_only_business_hours": true,
+
+  "gitUser": "RafaelaSommer",
+  "gitEmail": "camilaerafaelagoncalves@hotmail.com"
 }

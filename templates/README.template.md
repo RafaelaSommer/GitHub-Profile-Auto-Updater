@@ -8,11 +8,13 @@ Ele coleta informações do próprio GitHub e mantém o README sempre atualizado
 
 ## ✨ Funcionalidades
 
-- 📊 Total de repositórios públicos  
-- 🧠 Contagem de projetos por linguagem  
-- ⏱️ Execução automática a cada 2 horas  
-- 🔁 Atualização imediata via workflow manual  
-- 🧼 Evita commits quando não há mudanças  
+- 📊 Monitoramento automático de estatísticas do perfil  
+- 🧠 Distribuição inteligente de projetos por linguagem  
+- 🔄 Atualização híbrida com horários fixos e intervalo controlado  
+- 🕒 Execução otimizada dentro do horário comercial  
+- 🚀 Sistema de retry automático para maior estabilidade  
+- 🧼 Commit inteligente (evita alterações desnecessárias)  
+- 🎨 Geração dinâmica de badges com paleta avançada de cores  
 
 ---
 
@@ -88,16 +90,18 @@ Workflows que executam o script automaticamente.
 
 📌 **Últimas Atualizações**  
 📦 **Total de projetos:** {total_projects}  
+👥 **Seguidores:** {followers}  
+⭐ **Total de Stars recebidas:** {stars}  
 
 🧠 **Projetos por linguagem:**  
 {language_lines}
 
-⚙️ **Atualização automática:** GitHub Actions (a cada 15 minutos)
+⚙️ **Atualização automática:** GitHub Actions (a cada 20 minutos)
 
 🕒 **Última atualização:**  
 {last_update} (Horário de Brasília)
 
-🔄 **Próxima atualização automática (15 min):**  
+🔄 **Próxima atualização automática:**  
 {next_update_15} (Horário de Brasília)
 
 ⏭ **Próxima atualização principal:**  
