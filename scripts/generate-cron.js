@@ -29,22 +29,29 @@ if (fixedInterval <= 0 || fixedInterval > 12) {
   process.exit(1);
 }
 
+if (intervalMinutes <= 0 || intervalMinutes > 59) {
+  console.error("❌ interval_minutes deve estar entre 1 e 59.");
+  process.exit(1);
+}
+
 // ================= GERA HORÁRIOS FIXOS =================
 let fixedHours = [];
+
 for (let h = businessStart; h <= businessEnd; h += fixedInterval) {
   fixedHours.push(h);
 }
 
-// Remove duplicados e ordena
 fixedHours = [...new Set(fixedHours)].sort((a, b) => a - b);
 
 // ================= GERA CRONS =================
 let cronEntries = [];
 
-// 🔹 Horários fixos comerciais
-cronEntries.push(`0 ${fixedHours.join(",")} * * *`);
+// Horários fixos
+if (fixedHours.length > 0) {
+  cronEntries.push(`0 ${fixedHours.join(",")} * * *`);
+}
 
-// 🔹 Intervalo de minutos
+// Intervalo de minutos
 if (enableInterval) {
   if (intervalOnlyBusiness) {
     cronEntries.push(`*/${intervalMinutes} ${businessStart}-${businessEnd} * * *`);
@@ -53,11 +60,16 @@ if (enableInterval) {
   }
 }
 
+if (cronEntries.length === 0) {
+  console.error("❌ Nenhuma regra de agendamento foi gerada.");
+  process.exit(1);
+}
+
 console.log("📅 Cron gerado:");
 cronEntries.forEach(c => console.log("   ", c));
 
 // ================= MONTA WORKFLOW =================
-const workflow = `name: 🤖 Update README
+const workflow = `name: Update README
 
 on:
   schedule:
@@ -86,17 +98,12 @@ jobs:
 
       - run: npm ci
 
-      - name: 🚀 Run Profile Updater
+      - name: Run Profile Updater
         run: npm run update
         env:
           GITHUB_TOKEN: \${{ secrets.GITHUB_TOKEN }}
 
-      - name: 📅 Generate timestamp (BRT)
-        id: time
-        run: |
-          echo "DATE=$(TZ='America/Sao_Paulo' date '+%d/%m/%Y %H:%M:%S')" >> $GITHUB_OUTPUT
-
-      - name: 📦 Commit changes
+      - name: Commit changes
         run: |
           git config --global user.name "${settings.gitUser}"
           git config --global user.email "${settings.gitEmail}"
@@ -104,9 +111,9 @@ jobs:
           git add README.md .github/last-run.json
 
           if git diff --cached --quiet; then
-            echo "ℹ️ Nenhuma alteração detectada."
+            echo "No changes detected."
           else
-            git commit -m "🤖 Atualização Automática - \${{ steps.time.outputs.DATE }} (BRT)"
+            git commit -m "chore: update profile README"
             git push
           fi
 `;
@@ -114,4 +121,4 @@ jobs:
 fs.mkdirSync(path.dirname(workflowPath), { recursive: true });
 fs.writeFileSync(workflowPath, workflow);
 
-console.log("✅ Workflow híbrido inteligente gerado com sucesso!");
+console.log("✅ Workflow gerado com sucesso!");
