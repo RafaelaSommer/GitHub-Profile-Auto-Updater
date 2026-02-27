@@ -164,7 +164,7 @@ async function updateReadme() {
       .replace("{stars}", totalStars)
       .replace("{total_projects}", totalProjects)
       .replace("{language_lines}", generateLanguageBadges(repos))
-      .replace("{last_update}", now.toFormat("dd-MM-yyyy_HH-mm"))
+      .replace("{last_update}", now.toFormat("dd/MM/yyyy HH:mm"))
       .replace("{next_update_15}", next15.toFormat("dd/MM/yyyy HH:mm"))
       .replace("{next_update_main}", nextMain.toFormat("dd/MM/yyyy HH:mm"));
 
