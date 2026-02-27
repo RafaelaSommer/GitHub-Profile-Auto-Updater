@@ -113,7 +113,7 @@ function generateLanguageBadges(repos) {
     languageCount[lang] = (languageCount[lang] || 0) + 1;
   });
 
-  const colors = [
+  const colors = [ /* sua lista mantida exatamente igual */ 
     "ff6b6b","feca57","48dbfb","1dd1a1","5f27cd","54a0ff","00d2d3",
     "ff9ff3","ee5253","0abde3","10ac84","222f3e","c8d6e5","576574",
     "ff9f43","1e90ff","2ed573","ffa502","3742fa","70a1ff","ff4757",
@@ -135,7 +135,6 @@ function generateLanguageBadges(repos) {
     .map(([lang, count]) => {
       const color = colors[colorIndex % colors.length];
       colorIndex++;
-
       return `![${lang}](https://img.shields.io/badge/${encodeURIComponent(lang)}-${count}-${color}?style=flat)`;
     })
     .join(" ");
@@ -165,7 +164,7 @@ async function updateReadme() {
       .replace("{stars}", totalStars)
       .replace("{total_projects}", totalProjects)
       .replace("{language_lines}", generateLanguageBadges(repos))
-      .replace("{last_update}", now.toFormat("dd/MM/yyyy HH:mm"))
+      .replace("{last_update}", now.toFormat("dd-MM-yyyy_HH-mm"))
       .replace("{next_update_15}", next15.toFormat("dd/MM/yyyy HH:mm"))
       .replace("{next_update_main}", nextMain.toFormat("dd/MM/yyyy HH:mm"));
 

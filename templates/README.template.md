@@ -89,6 +89,7 @@ Workflows que executam o script automaticamente.
 ## 📊 Última Atualização Automática
 
 📌 **Últimas Atualizações**  
+
 📦 **Total de projetos:** {total_projects}  
 👥 **Seguidores:** {followers}  
 ⭐ **Total de Stars recebidas:** {stars}  
