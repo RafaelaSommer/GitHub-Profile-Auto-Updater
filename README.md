@@ -8,11 +8,13 @@ Ele coleta informações do próprio GitHub e mantém o README sempre atualizado
 
 ## ✨ Funcionalidades
 
-- 📊 Total de repositórios públicos  
-- 🧠 Contagem de projetos por linguagem  
-- ⏱️ Execução automática a cada 2 horas  
-- 🔁 Atualização imediata via workflow manual  
-- 🧼 Evita commits quando não há mudanças  
+- 📊 Monitoramento automático de estatísticas do perfil  
+- 🧠 Distribuição inteligente de projetos por linguagem  
+- 🔄 Atualização híbrida com horários fixos e intervalo controlado  
+- 🕒 Execução otimizada dentro do horário comercial  
+- 🚀 Sistema de retry automático para maior estabilidade  
+- 🧼 Commit inteligente (evita alterações desnecessárias)  
+- 🎨 Geração dinâmica de badges com paleta avançada de cores  
 
 ---
 
@@ -88,20 +90,22 @@ Workflows que executam o script automaticamente.
 
 📌 **Últimas Atualizações**  
 📦 **Total de projetos:** 9  
+👥 **Seguidores:** 303  
+⭐ **Total de Stars recebidas:** 15  
 
 🧠 **Projetos por linguagem:**  
-![Other](https://img.shields.io/badge/Other-5-6e7681?style=for-the-badge) ![Python](https://img.shields.io/badge/Python-3-3776ab?style=for-the-badge) ![C#](https://img.shields.io/badge/C%23-1-239120?style=for-the-badge)
+![Python](https://img.shields.io/badge/Python-3-ff6b6b?style=flat) ![C#](https://img.shields.io/badge/C%23-3-feca57?style=flat) ![Jupyter Notebook](https://img.shields.io/badge/Jupyter%20Notebook-1-48dbfb?style=flat) ![JavaScript](https://img.shields.io/badge/JavaScript-1-1dd1a1?style=flat) ![TSQL](https://img.shields.io/badge/TSQL-1-5f27cd?style=flat)
 
-⚙️ **Atualização automática:** GitHub Actions (a cada 15 minutos)
+⚙️ **Atualização automática:** GitHub Actions (a cada 20 minutos)
 
 🕒 **Última atualização:**  
-27/02/2026 14:59 (Horário de Brasília)
+27/02/2026 15:24 (Horário de Brasília)
 
-🔄 **Próxima atualização automática (15 min):**  
-27/02/2026 15:14 (Horário de Brasília)
+🔄 **Próxima atualização automática:**  
+27/02/2026 15:44 (Horário de Brasília)
 
 ⏭ **Próxima atualização principal:**  
-27/02/2026 16:00 (Horário de Brasília)
+27/02/2026 18:00 (Horário de Brasília)
 
 ---
 
