@@ -11,7 +11,7 @@
 
     
         <text x="40" y="70" fill="#E6EDF3" font-size="15">
-          Python
+          JavaScript
         </text>
 
         <text x="600" y="70" fill="#8B949E" font-size="13" text-anchor="end">
@@ -77,7 +77,7 @@
         </rect>
       
         <text x="40" y="205" fill="#E6EDF3" font-size="15">
-          JavaScript
+          Python
         </text>
 
         <text x="600" y="205" fill="#8B949E" font-size="13" text-anchor="end">
