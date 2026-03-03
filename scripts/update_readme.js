@@ -6,194 +6,197 @@ const axios = require("axios");
 const { DateTime } = require("luxon");
 require("dotenv").config();
 
-// ================= TIMEOUT GLOBAL (1 MIN) =================
-const TIMEOUT_LIMIT = 60 * 1000;
+const TIMEOUT_LIMIT = 20 * 60 * 1000;
 
-const timeout = setTimeout(() => {
-  console.error("⛔ Execução excedeu 1 minuto. Encerrando...");
-  process.exit(1);
-}, TIMEOUT_LIMIT);
+const ROOT = path.join(__dirname, "..");
+const SETTINGS_PATH = path.join(ROOT, ".github/settings.json");
+const LOCK_PATH = path.join(ROOT, ".github/lock.json");
+const LAST_RUN_PATH = path.join(ROOT, ".github/last-run.json");
+const TEMPLATE_PATH = path.join(ROOT, "templates/README.template.md");
+const README_PATH = path.join(ROOT, "README.md");
+const SVG_PATH = path.join(ROOT, "assets/languages.svg");
 
-// ================= CONFIG =================
-const settingsPath = path.join(__dirname, "../.github/settings.json");
-const settings = JSON.parse(fs.readFileSync(settingsPath, "utf8"));
-
-const GITHUB_USER = settings.github_user;
-const TIMEZONE = settings.timezone || "America/Sao_Paulo";
-
-const README_PATH = path.join(__dirname, "../README.md");
-const TEMPLATE_PATH = path.join(__dirname, "../templates/README.template.md");
-const LAST_RUN_PATH = path.join(__dirname, "../.github/last-run.json");
-
-// ================= GITHUB CLIENT =================
 if (!process.env.GITHUB_TOKEN) {
   console.error("❌ GITHUB_TOKEN não encontrado.");
   process.exit(1);
 }
 
-const graphql = axios.create({
-  baseURL: "https://api.github.com/graphql",
-  headers: {
-    Authorization: `Bearer ${process.env.GITHUB_TOKEN.trim()}`,
-    "Content-Type": "application/json",
-    "User-Agent": "Rafaela-Profile-Bot"
-  },
-  timeout: 8000
-});
+const settings = JSON.parse(fs.readFileSync(SETTINGS_PATH));
+const TIMEZONE = settings.timezone;
+const USER = settings.github_user;
 
-// ================= HELPERS =================
-function loadLastRun() {
-  if (!fs.existsSync(LAST_RUN_PATH)) return { total_updates: 0 };
-  return JSON.parse(fs.readFileSync(LAST_RUN_PATH, "utf8"));
+const timeout = setTimeout(() => {
+  console.error("⛔ Timeout 20min.");
+  releaseLock();
+  process.exit(1);
+}, TIMEOUT_LIMIT);
+
+function log(msg) {
+  console.log(`[${new Date().toISOString()}] ${msg}`);
 }
 
-function saveLastRun(data) {
-  fs.writeFileSync(LAST_RUN_PATH, JSON.stringify(data, null, 2));
-}
+function acquireLock() {
+  if (fs.existsSync(LOCK_PATH)) {
+    const lock = JSON.parse(fs.readFileSync(LOCK_PATH));
+    const diff = Date.now() - new Date(lock.started_at).getTime();
 
-function getNextMainUpdate(now) {
-  const UPDATE_HOURS = settings.update_hours || [0, 6, 12, 18];
-  const today = now.startOf("day");
-
-  const futureHours = UPDATE_HOURS
-    .map(hour => today.plus({ hours: hour }))
-    .filter(date => date > now);
-
-  return futureHours.length > 0
-    ? futureHours[0]
-    : today.plus({ days: 1, hours: UPDATE_HOURS[0] });
-}
-
-function getNextUpdate15(now) {
-  return now.plus({ minutes: 20 });
-}
-
-// ================= FETCH COM RETRY =================
-async function fetchGitHubData(retries = 2) {
-  const query = `
-    query {
-      user(login: "${GITHUB_USER}") {
-        followers { totalCount }
-        repositories(first: 100, ownerAffiliations: OWNER) {
-          totalCount
-          nodes {
-            stargazerCount
-            primaryLanguage { name }
-          }
-        }
-      }
+    if (diff < TIMEOUT_LIMIT) {
+      log("⚠ Outro processo em execução.");
+      process.exit(0);
     }
-  `;
+  }
 
-  try {
-    const response = await graphql.post("", { query });
+  fs.writeFileSync(LOCK_PATH, JSON.stringify({
+    started_at: new Date().toISOString()
+  }));
+}
 
-    if (response.data.errors) {
-      throw new Error(JSON.stringify(response.data.errors));
-    }
-
-    return response.data.data.user;
-
-  } catch (err) {
-    if (retries > 0) {
-      console.log("🔁 Tentando novamente...");
-      await new Promise(r => setTimeout(r, 1500));
-      return fetchGitHubData(retries - 1);
-    }
-    throw err;
+function releaseLock() {
+  if (fs.existsSync(LOCK_PATH)) {
+    fs.unlinkSync(LOCK_PATH);
   }
 }
 
-// ================= BADGES COM 70+ CORES =================
-function generateLanguageBadges(repos) {
-  const languageCount = {};
+async function fetchGitHub() {
+  const query = `
+  query {
+    user(login: "${USER}") {
+      followers { totalCount }
+      repositories(first: 100, ownerAffiliations: OWNER) {
+        totalCount
+        nodes {
+          stargazerCount
+          primaryLanguage { name }
+        }
+      }
+    }
+  }`;
 
-  repos.forEach(repo => {
-    const lang = repo.primaryLanguage?.name || "Other";
-    languageCount[lang] = (languageCount[lang] || 0) + 1;
-  });
+  const res = await axios.post(
+    "https://api.github.com/graphql",
+    { query },
+    { headers: { Authorization: `Bearer ${process.env.GITHUB_TOKEN}` } }
+  );
 
-  const colors = [
-    "ff6b6b","feca57","48dbfb","1dd1a1","5f27cd","54a0ff","00d2d3",
-    "ff9ff3","ee5253","0abde3","10ac84","222f3e","c8d6e5","576574",
-    "ff9f43","1e90ff","2ed573","ffa502","3742fa","70a1ff","ff4757",
-    "7bed9f","5352ed","ff6348","2f3542","ff7f50","6495ed","dc143c",
-    "00fa9a","8a2be2","ff1493","7fff00","ff4500","00ced1","ffd700",
-    "20b2aa","ff69b4","ba55d3","cd5c5c","4682b4","9acd32","ff8c00",
-    "8fbc8f","9932cc","e9967a","8b0000","006400","483d8b","2e8b57",
-    "ff00ff","00ff7f","b22222","5d6d7e","a569bd","52be80","f4d03f",
-    "dc7633","5dade2","48c9b0","af7ac5","34495e","e74c3c","16a085",
-    "2980b9","8e44ad","2c3e50","f39c12","d35400","e84393","6c5ce7",
-    "00b894","fdcb6e","0984e3","e17055","81ecec","fab1a0","00cec9",
-    "fd79a8","6ab04c","eb4d4b","30336b","be2edd","f0932b"
-  ];
-
-  let colorIndex = 0;
-
-  return Object.entries(languageCount)
-    .sort((a, b) => b[1] - a[1])
-    .map(([lang, count]) => {
-      const color = colors[colorIndex % colors.length];
-      colorIndex++;
-      return `![${lang}](https://img.shields.io/badge/${encodeURIComponent(lang)}-${count}-${color}?style=flat)`;
-    })
-    .join(" ");
+  return res.data.data.user;
 }
 
-// ================= MAIN =================
-async function updateReadme() {
-  try {
-    const now = DateTime.now().setZone(TIMEZONE);
-    const lastRunData = loadLastRun();
+function generateSVG(languageData) {
+  const total = Object.values(languageData).reduce((a,b)=>a+b,0);
 
-    console.log("🔎 Buscando dados do GitHub...");
-    const user = await fetchGitHubData();
+  const barWidthMax = 420;
+  const barHeight = 18;
+  const spacing = 45;
+  const startY = 70;
 
-    const followers = user.followers.totalCount;
-    const repos = user.repositories.nodes;
-    const totalProjects = user.repositories.totalCount;
-    const totalStars = repos.reduce((acc, repo) => acc + repo.stargazerCount, 0);
+  let y = startY;
+  let i = 0;
+  let bars = "";
 
-    const next15 = getNextUpdate15(now);
-    const nextMain = getNextMainUpdate(now);
+  const COLORS = [
+    "#FF6B6B","#6BCB77","#4D96FF","#FFD93D",
+    "#845EC2","#FF9671","#00C9A7","#D65DB1",
+    "#2C73D2","#B39CD0"
+  ];
 
-    const template = fs.readFileSync(TEMPLATE_PATH, "utf8");
+  Object.entries(languageData)
+    .sort((a,b)=>b[1]-a[1])
+    .forEach(([lang,val])=>{
 
-    let content = template
-      .replace("{followers}", followers)
-      .replace("{stars}", totalStars)
-      .replace("{total_projects}", totalProjects)
-      .replace("{language_lines}", generateLanguageBadges(repos))
-      .replace("{last_update}", now.toFormat("dd/MM/yyyy HH:mm"))
-      .replace("{next_update_15}", next15.toFormat("dd/MM/yyyy HH:mm"))
-      .replace("{next_update_main}", nextMain.toFormat("dd/MM/yyyy HH:mm"));
+      const percent = ((val/total)*100).toFixed(1);
+      const width = (val/total)*barWidthMax;
+      const color = COLORS[i % COLORS.length];
 
-    // ================= BADGE DE ÚLTIMA ATUALIZAÇÃO =================
-    const formattedDate = now.toFormat("dd/MM/yyyy HH:mm");
-    const encodedDate = encodeURIComponent(formattedDate);
+      bars += `
+        <text x="40" y="${y}" fill="#E6EDF3" font-size="15">
+          ${lang}
+        </text>
 
-    const lastUpdateBadge =
-      `![Last Update](https://img.shields.io/badge/Last%20Update-${encodedDate}-blue?style=flat-square)\n\n`;
+        <text x="600" y="${y}" fill="#8B949E" font-size="13" text-anchor="end">
+          ${percent}%
+        </text>
 
-    content = content.replace(
-      /📌 \*\*Últimas Atualizações\*\*\s*/,
-      `📌 **Últimas Atualizações**\n\n${lastUpdateBadge}`
-    );
+        <rect x="200" y="${y-14}" rx="8"
+          width="${barWidthMax}" height="${barHeight}"
+          fill="#21262D"/>
 
-    fs.writeFileSync(README_PATH, content);
+        <rect x="200" y="${y-14}" rx="8"
+          width="0" height="${barHeight}"
+          fill="${color}">
+          <animate attributeName="width"
+                   from="0"
+                   to="${width}"
+                   dur="1.4s"
+                   fill="freeze"/>
+        </rect>
+      `;
 
-    saveLastRun({
-      last_run: now.toISO(),
-      total_updates: (lastRunData.total_updates || 0) + 1
+      y += spacing;
+      i++;
     });
 
-    console.log("✅ README atualizado com sucesso!");
-  } catch (err) {
-    console.error("❌ Erro:", err.message);
-    process.exit(1);
+  const height = y + 40;
+
+  return `
+  <svg width="700" height="${height}" xmlns="http://www.w3.org/2000/svg">
+    <rect width="100%" height="100%" fill="#0D1117"/>
+
+    <text x="40" y="40"
+      fill="#58A6FF"
+      font-size="20"
+      font-weight="bold">
+      📊 Linguagens mais utilizadas
+    </text>
+
+    ${bars}
+  </svg>`;
+}
+
+async function main() {
+  acquireLock();
+  log("🚀 Atualização iniciada");
+
+  try {
+    const now = DateTime.now().setZone(TIMEZONE);
+    const user = await fetchGitHub();
+
+    const repos = user.repositories.nodes;
+    const followers = user.followers.totalCount;
+    const totalProjects = user.repositories.totalCount;
+    const stars = repos.reduce((a,b)=>a+b.stargazerCount,0);
+
+    const langCount = {};
+    repos.forEach(r=>{
+      const lang = r.primaryLanguage?.name || "Other";
+      langCount[lang] = (langCount[lang]||0)+1;
+    });
+
+    fs.mkdirSync(path.join(ROOT,"assets"),{recursive:true});
+    fs.writeFileSync(SVG_PATH, generateSVG(langCount));
+
+    const template = fs.readFileSync(TEMPLATE_PATH,"utf8");
+
+    const content = template
+      .replace("{followers}",followers)
+      .replace("{stars}",stars)
+      .replace("{total_projects}",totalProjects)
+      .replace("{last_update}",now.toFormat("dd/MM/yyyy HH:mm"))
+      .replace("{next_update}",now.plus({minutes:20}).toFormat("dd/MM/yyyy HH:mm"));
+
+    fs.writeFileSync(README_PATH,content);
+
+    fs.writeFileSync(LAST_RUN_PATH, JSON.stringify({
+      last_run: now.toISO()
+    },null,2));
+
+    log("✅ Atualização concluída");
+
+  } catch(err) {
+    log("❌ Erro: "+err.message);
   } finally {
+    releaseLock();
     clearTimeout(timeout);
   }
 }
 
-updateReadme();
+main();

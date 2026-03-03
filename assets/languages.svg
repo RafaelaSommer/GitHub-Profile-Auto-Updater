@@ -1,0 +1,123 @@
+
+  <svg width="700" height="335" xmlns="http://www.w3.org/2000/svg">
+    <rect width="100%" height="100%" fill="#0D1117"/>
+
+    <text x="40" y="40"
+      fill="#58A6FF"
+      font-size="20"
+      font-weight="bold">
+      📊 Linguagens mais utilizadas
+    </text>
+
+    
+        <text x="40" y="70" fill="#E6EDF3" font-size="15">
+          Python
+        </text>
+
+        <text x="600" y="70" fill="#8B949E" font-size="13" text-anchor="end">
+          33.3%
+        </text>
+
+        <rect x="200" y="56" rx="8"
+          width="420" height="18"
+          fill="#21262D"/>
+
+        <rect x="200" y="56" rx="8"
+          width="0" height="18"
+          fill="#FF6B6B">
+          <animate attributeName="width"
+                   from="0"
+                   to="140"
+                   dur="1.4s"
+                   fill="freeze"/>
+        </rect>
+      
+        <text x="40" y="115" fill="#E6EDF3" font-size="15">
+          C#
+        </text>
+
+        <text x="600" y="115" fill="#8B949E" font-size="13" text-anchor="end">
+          33.3%
+        </text>
+
+        <rect x="200" y="101" rx="8"
+          width="420" height="18"
+          fill="#21262D"/>
+
+        <rect x="200" y="101" rx="8"
+          width="0" height="18"
+          fill="#6BCB77">
+          <animate attributeName="width"
+                   from="0"
+                   to="140"
+                   dur="1.4s"
+                   fill="freeze"/>
+        </rect>
+      
+        <text x="40" y="160" fill="#E6EDF3" font-size="15">
+          Jupyter Notebook
+        </text>
+
+        <text x="600" y="160" fill="#8B949E" font-size="13" text-anchor="end">
+          11.1%
+        </text>
+
+        <rect x="200" y="146" rx="8"
+          width="420" height="18"
+          fill="#21262D"/>
+
+        <rect x="200" y="146" rx="8"
+          width="0" height="18"
+          fill="#4D96FF">
+          <animate attributeName="width"
+                   from="0"
+                   to="46.666666666666664"
+                   dur="1.4s"
+                   fill="freeze"/>
+        </rect>
+      
+        <text x="40" y="205" fill="#E6EDF3" font-size="15">
+          JavaScript
+        </text>
+
+        <text x="600" y="205" fill="#8B949E" font-size="13" text-anchor="end">
+          11.1%
+        </text>
+
+        <rect x="200" y="191" rx="8"
+          width="420" height="18"
+          fill="#21262D"/>
+
+        <rect x="200" y="191" rx="8"
+          width="0" height="18"
+          fill="#FFD93D">
+          <animate attributeName="width"
+                   from="0"
+                   to="46.666666666666664"
+                   dur="1.4s"
+                   fill="freeze"/>
+        </rect>
+      
+        <text x="40" y="250" fill="#E6EDF3" font-size="15">
+          TSQL
+        </text>
+
+        <text x="600" y="250" fill="#8B949E" font-size="13" text-anchor="end">
+          11.1%
+        </text>
+
+        <rect x="200" y="236" rx="8"
+          width="420" height="18"
+          fill="#21262D"/>
+
+        <rect x="200" y="236" rx="8"
+          width="0" height="18"
+          fill="#845EC2">
+          <animate attributeName="width"
+                   from="0"
+                   to="46.666666666666664"
+                   dur="1.4s"
+                   fill="freeze"/>
+        </rect>
+      
+  </svg>

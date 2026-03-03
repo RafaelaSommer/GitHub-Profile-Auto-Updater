@@ -86,27 +86,24 @@ Workflows que executam o script automaticamente.
 
 ---
 
-## 📊 Última Atualização Automática
+## 📊 Dashboard de Linguagens
 
-📌 **Últimas Atualizações**  
+![Languages Dashboard](./assets/languages.svg)
+
+---
+
+## 📊 Última Atualização Automática
 
 📦 **Total de projetos:** {total_projects}  
 👥 **Seguidores:** {followers}  
 ⭐ **Total de Stars recebidas:** {stars}  
 
-🧠 **Projetos por linguagem:**  
-{language_lines}
-
-⚙️ **Atualização automática:** GitHub Actions (a cada 20 minutos)
-
 🕒 **Última atualização:**  
 {last_update} (Horário de Brasília)
 
 🔄 **Próxima atualização automática:**  
-{next_update_15} (Horário de Brasília)
-
-⏭ **Próxima atualização principal:**  
-{next_update_main} (Horário de Brasília)
+{next_update} (Horário de Brasília)
+ (Horário de Brasília)
 
 ---
 

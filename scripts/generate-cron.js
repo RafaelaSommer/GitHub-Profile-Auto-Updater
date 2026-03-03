@@ -3,77 +3,43 @@
 const fs = require("fs");
 const path = require("path");
 
-// ================= CAMINHOS =================
-const settingsPath = path.join(__dirname, "../.github/settings.json");
-const workflowPath = path.join(__dirname, "../.github/workflows/update-readme.yml");
+const ROOT = path.join(__dirname, "..");
+const SETTINGS_PATH = path.join(ROOT, ".github/settings.json");
 
-if (!fs.existsSync(settingsPath)) {
-  console.error("❌ settings.json não encontrado.");
+if (!fs.existsSync(SETTINGS_PATH)) {
+  console.error("❌ settings.json não encontrado em .github/");
   process.exit(1);
 }
 
-const settings = JSON.parse(fs.readFileSync(settingsPath, "utf8"));
+const settings = JSON.parse(fs.readFileSync(SETTINGS_PATH, "utf8"));
 
-// ================= CONFIGURAÇÕES =================
-const businessStart = settings.business_hours?.start ?? 8;
-const businessEnd = settings.business_hours?.end ?? 18;
+const gitUser = settings.gitUser;
+const gitEmail = settings.gitEmail;
+const startHour = settings.business_hours.start;
+const endHour = settings.business_hours.end;
+const interval = settings.interval_minutes || 20;
 
-const fixedInterval = settings.fixed_interval_hours ?? 2;
-const enableInterval = settings.enable_interval_minutes ?? false;
-const intervalMinutes = settings.interval_minutes ?? 20;
-const intervalOnlyBusiness = settings.interval_only_business_hours ?? true;
-
-// ================= VALIDAÇÃO =================
-if (fixedInterval <= 0 || fixedInterval > 12) {
-  console.error("❌ fixed_interval_hours deve estar entre 1 e 12.");
+if (!gitUser || !gitEmail) {
+  console.error("❌ gitUser ou gitEmail não definidos no settings.json");
   process.exit(1);
 }
 
-if (intervalMinutes <= 0 || intervalMinutes > 59) {
-  console.error("❌ interval_minutes deve estar entre 1 e 59.");
-  process.exit(1);
-}
+/*
+IMPORTANTE:
+Cron usa UTC.
+GitHub Actions roda em UTC.
+Se quiser horário de Brasília fixo, manteremos 7-23 direto
+pois seu script já valida timezone internamente.
+*/
 
-// ================= GERA HORÁRIOS FIXOS =================
-let fixedHours = [];
+const cronExpression = `*/${interval} ${startHour}-${endHour} * * *`;
 
-for (let h = businessStart; h <= businessEnd; h += fixedInterval) {
-  fixedHours.push(h);
-}
-
-fixedHours = [...new Set(fixedHours)].sort((a, b) => a - b);
-
-// ================= GERA CRONS =================
-let cronEntries = [];
-
-// Horários fixos
-if (fixedHours.length > 0) {
-  cronEntries.push(`0 ${fixedHours.join(",")} * * *`);
-}
-
-// Intervalo de minutos
-if (enableInterval) {
-  if (intervalOnlyBusiness) {
-    cronEntries.push(`*/${intervalMinutes} ${businessStart}-${businessEnd} * * *`);
-  } else {
-    cronEntries.push(`*/${intervalMinutes} * * * *`);
-  }
-}
-
-if (cronEntries.length === 0) {
-  console.error("❌ Nenhuma regra de agendamento foi gerada.");
-  process.exit(1);
-}
-
-console.log("📅 Cron gerado:");
-cronEntries.forEach(c => console.log("   ", c));
-
-// ================= MONTA WORKFLOW =================
-const workflow = `name: Update README
+const workflow = `
+name: 🤖 Update README
 
 on:
   schedule:
-${cronEntries.map(c => `    - cron: "${c}"`).join("\n")}
+    - cron: "${cronExpression}"
   workflow_dispatch:
 
 concurrency:
@@ -84,41 +50,43 @@ permissions:
   contents: write
 
 jobs:
-  update-profile:
+  update:
     runs-on: ubuntu-latest
-    timeout-minutes: 3
+    timeout-minutes: 20
 
     steps:
-      - uses: actions/checkout@v4
+      - name: 📥 Checkout
+        uses: actions/checkout@v4
 
-      - uses: actions/setup-node@v4
+      - name: ⚙️ Setup Node
+        uses: actions/setup-node@v4
         with:
           node-version: "20"
-          cache: "npm"
 
-      - run: npm ci
+      - name: 📦 Install Dependencies
+        run: npm install axios luxon dotenv
 
-      - name: Run Profile Updater
-        run: npm run update
+      - name: 👤 Configurar Git
+        run: |
+          git config user.name "${gitUser}"
+          git config user.email "${gitEmail}"
+
+      - name: 🚀 Executar Update
+        run: node scripts/update_readme.js
         env:
           GITHUB_TOKEN: \${{ secrets.GITHUB_TOKEN }}
-
-      - name: Commit changes
-        run: |
-          git config --global user.name "${settings.gitUser}"
-          git config --global user.email "${settings.gitEmail}"
-
-          git add README.md .github/last-run.json
-
-          if git diff --cached --quiet; then
-            echo "No changes detected."
-          else
-            git commit -m "chore: update profile README"
-            git push
-          fi
 `;
 
-fs.mkdirSync(path.dirname(workflowPath), { recursive: true });
-fs.writeFileSync(workflowPath, workflow);
+const WORKFLOW_DIR = path.join(ROOT, ".github/workflows");
+fs.mkdirSync(WORKFLOW_DIR, { recursive: true });
+
+fs.writeFileSync(
+  path.join(WORKFLOW_DIR, "update-readme.yml"),
+  workflow.trim()
+);
 
 console.log("✅ Workflow gerado com sucesso!");
+console.log("🕒 Horário:", `${startHour}h até ${endHour}h`);
+console.log("⏱ Intervalo:", `${interval} minutos`);
+console.log("👤 Git User:", gitUser);
+console.log("📧 Git Email:", gitEmail);

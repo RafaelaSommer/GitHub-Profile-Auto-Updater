@@ -86,29 +86,24 @@ Workflows que executam o script automaticamente.
 
 ---
 
+## 📊 Dashboard de Linguagens
+
+![Languages Dashboard](./assets/languages.svg)
+
+---
+
 ## 📊 Última Atualização Automática
 
-📌 **Últimas Atualizações**
-
-![Last Update](https://img.shields.io/badge/Last%20Update-27%2F02%2F2026%2016%3A16-blue?style=flat-square)
-
 📦 **Total de projetos:** 9  
-👥 **Seguidores:** 304  
+👥 **Seguidores:** 316  
 ⭐ **Total de Stars recebidas:** 15  
 
-🧠 **Projetos por linguagem:**  
-![Python](https://img.shields.io/badge/Python-3-ff6b6b?style=flat) ![C#](https://img.shields.io/badge/C%23-3-feca57?style=flat) ![Jupyter Notebook](https://img.shields.io/badge/Jupyter%20Notebook-1-48dbfb?style=flat) ![JavaScript](https://img.shields.io/badge/JavaScript-1-1dd1a1?style=flat) ![TSQL](https://img.shields.io/badge/TSQL-1-5f27cd?style=flat)
-
-⚙️ **Atualização automática:** GitHub Actions (a cada 20 minutos)
-
 🕒 **Última atualização:**  
-27/02/2026 16:16 (Horário de Brasília)
+03/03/2026 15:34 (Horário de Brasília)
 
 🔄 **Próxima atualização automática:**  
-27/02/2026 16:36 (Horário de Brasília)
-
-⏭ **Próxima atualização principal:**  
-27/02/2026 18:00 (Horário de Brasília)
+03/03/2026 15:54 (Horário de Brasília)
+ (Horário de Brasília)
 
 ---
 
