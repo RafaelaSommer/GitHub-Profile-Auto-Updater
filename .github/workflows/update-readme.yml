@@ -1,9 +1,8 @@
-name: Update README
+name: 🤖 Update README
 
 on:
   schedule:
-    - cron: "0 8,10,12,14,16,18 * * *"
-    - cron: "*/20 8-18 * * *"
+    - cron: "*/20 7-23 * * *"
   workflow_dispatch:
 
 concurrency:
@@ -14,35 +13,28 @@ permissions:
   contents: write
 
 jobs:
-  update-profile:
+  update:
     runs-on: ubuntu-latest
-    timeout-minutes: 3
+    timeout-minutes: 20
 
     steps:
-      - uses: actions/checkout@v4
+      - name: 📥 Checkout
+        uses: actions/checkout@v4
 
-      - uses: actions/setup-node@v4
+      - name: ⚙️ Setup Node
+        uses: actions/setup-node@v4
         with:
           node-version: "20"
-          cache: "npm"
 
-      - run: npm ci
+      - name: 📦 Install Dependencies
+        run: npm install axios luxon dotenv
 
-      - name: Run Profile Updater
-        run: npm run update
+      - name: 👤 Configurar Git
+        run: |
+          git config user.name "RafaelaSommer"
+          git config user.email "camilaerafaelagoncalves@hotmail.com"
+
+      - name: 🚀 Executar Update
+        run: node scripts/update_readme.js
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Commit changes
-        run: |
-          git config --global user.name "RafaelaSommer"
-          git config --global user.email "camilaerafaelagoncalves@hotmail.com"
-
-          git add README.md .github/last-run.json
-
-          if git diff --cached --quiet; then
-            echo "No changes detected."
-          else
-            git commit -m "chore: update profile README"
-            git push
-          fi

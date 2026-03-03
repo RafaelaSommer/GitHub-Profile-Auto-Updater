@@ -1,8 +1,8 @@
 # GitHub Profile Auto Updater 🚀
 
-Projeto em **Python** que atualiza automaticamente o README do perfil do GitHub usando **GitHub Actions**.
+Projeto em **Node.js** que atualiza automaticamente o README do perfil do GitHub usando **GitHub Actions**.
 
-Ele coleta informações do próprio GitHub e mantém o README sempre atualizado, sem intervenção manual.
+Ele coleta informações do próprio GitHub, gera dashboards e badges, e mantém o README sempre atualizado, sem intervenção manual.
 
 ---
 
@@ -10,11 +10,21 @@ Ele coleta informações do próprio GitHub e mantém o README sempre atualizado
 
 - 📊 Monitoramento automático de estatísticas do perfil  
 - 🧠 Distribuição inteligente de projetos por linguagem  
-- 🔄 Atualização híbrida com horários fixos e intervalo controlado  
-- 🕒 Execução otimizada dentro do horário comercial  
+- ⏱️ Atualização automática a cada 20 minutos, com horário controlado das 7h às 23h  
+- 🕒 Execução otimizada dentro do horário permitido  
 - 🚀 Sistema de retry automático para maior estabilidade  
 - 🧼 Commit inteligente (evita alterações desnecessárias)  
-- 🎨 Geração dinâmica de badges com paleta avançada de cores  
+- 🎨 Geração dinâmica de badges e dashboards em SVG  
+
+---
+
+## 🛠️ Scripts e Ferramentas
+
+- `generate-cron.js` — Calcula os próximos horários de execução e controla o agendamento.  
+- `update-readme.js` — Script principal que atualiza o `README.md` a partir do template.  
+- `generate-svg.js` — Gera badges e dashboards em SVG com base nas estatísticas.  
+- `bot-local.js` — Permite execução local e testes do bot.  
+- `iniciar-bot.bat` — Script para iniciar o bot diretamente no Windows.
 
 ---
 
@@ -40,45 +50,52 @@ Arquivos base usados para gerar automaticamente o README final.
 ---
 
 ### ⚙️ Scripts
-Responsáveis por coletar dados do GitHub e gerar o README automaticamente.
+Responsáveis por coletar dados do GitHub, gerar dashboards e atualizar o README automaticamente.
 
-- `scripts/update_readme.py`  
-  Script principal que consulta a GitHub API e gera o `README.md`.
+- `scripts/update-readme.js`  
+  Script principal que consulta a GitHub API, processa os dados e gera o `README.md`.  
+- `scripts/generate-svg.js`  
+  Gera badges e dashboards em SVG com base nas estatísticas do perfil.  
+- `scripts/generate-cron.js`  
+  Calcula os próximos horários de atualização e controla a execução do bot.  
+- `scripts/bot-local.js`  
+  Permite executar o bot localmente para testes e atualizações manuais.  
+- `iniciar-bot.bat`  
+  Script para iniciar o bot diretamente no Windows.
 
 ---
 
 ### 🔧 Configurações
 Centraliza as informações do projeto.
 
-- `config/settings.json`  
-  Usuário do GitHub, fuso horário e intervalo de atualização.
+- `.github/settings.json`  
+  Usuário do GitHub, fuso horário, intervalo de atualização e horários permitidos.
 
 ---
 
 ### 🤖 Automação (GitHub Actions)
-Workflows que executam o script automaticamente.
+Workflows que executam os scripts automaticamente.
 
 - `.github/workflows/update-readme.yml`  
-  Agenda a execução automática e permite execução manual.
+  Agenda a execução automática a cada 20 minutos, dentro do horário permitido, e permite execução manual.
 
 ---
 
 ### 📄 Arquivos principais
 
 - `README.md`  
-  README final do perfil (gerado automaticamente).
-
-- `requirements.txt`  
-  Dependências do projeto.
-
+  README final do perfil (gerado automaticamente).  
+- `package.json`  
+  Dependências do projeto Node.js e scripts NPM.  
+- `package-lock.json`  
+  Trava de versões de pacotes.  
 - `.gitignore`  
-  Arquivos ignorados pelo Git.
-
+  Arquivos e pastas ignorados pelo Git.
 ---
 
 ## ⚙️ Como Funciona
 
-1. O **GitHub Actions** executa o script Python  
+1. O **GitHub Actions** executa o script JavaScript 
 2. O script consulta a **GitHub REST API**  
 3. Os dados são processados em tempo real  
 4. O `README.md` é gerado a partir do `README.template.md`  
@@ -103,15 +120,19 @@ Workflows que executam o script automaticamente.
 
 🔄 **Próxima atualização automática:**  
 {next_update} (Horário de Brasília)
- (Horário de Brasília)
 
 ---
 
 ## ▶️ Executar Manualmente
 
-1. Vá até a aba **Actions** do repositório  
-2. Selecione o workflow **Update README**  
-3. Clique em **Run workflow**  
+### No GitHub
+1. Vá até a aba **Actions** do repositório.  
+2. Selecione o workflow **Update README**.  
+3. Clique em **Run workflow**.
+
+### Localmente
+1. Execute `bot-local.js` via Node.js.  
+2. Ou use o `iniciar-bot.bat` no Windows para iniciar o bot.
 
 ---
 
