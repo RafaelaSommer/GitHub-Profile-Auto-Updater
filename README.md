@@ -54,7 +54,7 @@ Responsáveis por coletar dados do GitHub, gerar dashboards e atualizar o README
 
 - `scripts/update-readme.js`  
   Script principal que consulta a GitHub API, processa os dados e gera o `README.md`.  
-- `scripts/generate-svg.js`  
+- `scripts/generate-dashboard.js`  
   Gera badges e dashboards em SVG com base nas estatísticas do perfil.  
 - `scripts/generate-cron.js`  
   Calcula os próximos horários de atualização e controla a execução do bot.  
@@ -112,10 +112,10 @@ Workflows que executam os scripts automaticamente.
 ## 🔄 Atualização Automática
 
 🕒 Última atualização:  
-05/03/2026 16:14:48 (Horário de Brasília)
+05/03/2026 16:16:50 (Horário de Brasília)
 
 🔁 Próxima atualização automática:  
-05/03/2026 16:34:48 (Horário de Brasília)
+05/03/2026 16:36:50 (Horário de Brasília)
 
 ---
 
