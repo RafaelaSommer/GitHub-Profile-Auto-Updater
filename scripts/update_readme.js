@@ -5,174 +5,160 @@ const path = require("path");
 const axios = require("axios");
 const { DateTime } = require("luxon");
 const { execSync } = require("child_process");
+const generateSVG = require("./generate-dashboard");
 
 const ROOT = path.join(__dirname, "..");
 
-const SETTINGS_PATH = path.join(ROOT, ".github/settings.json");
-const TEMPLATE_PATH = path.join(ROOT, "templates/README.template.md");
-const README_PATH = path.join(ROOT, "README.md");
-
-if (!fs.existsSync(SETTINGS_PATH)) {
-  console.error("❌ Arquivo .github/settings.json não encontrado.");
-  process.exit(1);
-}
-
-const SETTINGS = JSON.parse(fs.readFileSync(SETTINGS_PATH));
+const SETTINGS = JSON.parse(
+  fs.readFileSync(path.join(ROOT, ".github/settings.json"))
+);
 
 const TIMEZONE = SETTINGS.timezone;
 const USER = SETTINGS.github_user;
 const INTERVAL = SETTINGS.interval_minutes;
 
-function log(msg) {
+function log(msg){
   console.log(`[${new Date().toISOString()}] ${msg}`);
 }
 
-function getCurrentBranch() {
-  return execSync("git rev-parse --abbrev-ref HEAD", {
-    cwd: ROOT,
-  })
-    .toString()
-    .trim();
-}
-
-function hasLocalChanges() {
-  const status = execSync("git status --porcelain", { cwd: ROOT })
-    .toString()
-    .trim();
-  return status.length > 0;
-}
-
-function syncWithRemote(branch) {
-  log("🔄 Preparando sincronização...");
-
-  try {
-    // Se houver mudanças locais, salva temporariamente
-    if (hasLocalChanges()) {
-      log("💾 Salvando alterações locais (stash)...");
-      execSync("git stash --include-untracked", { cwd: ROOT });
-    }
-
-    log("🌐 Puxando atualizações do remoto...");
-    execSync(`git pull origin ${branch} --rebase`, {
-      cwd: ROOT,
-      stdio: "inherit",
-    });
-
-    // Se houver stash, aplica de volta
-    const stashList = execSync("git stash list", { cwd: ROOT })
-      .toString()
-      .trim();
-
-    if (stashList) {
-      log("📦 Restaurando alterações locais...");
-      execSync("git stash pop", { cwd: ROOT, stdio: "inherit" });
-    }
-
-  } catch (err) {
-    console.error("❌ Erro ao sincronizar com remoto.");
-    process.exit(1);
-  }
-}
-
-async function fetchGitHub() {
-  if (!process.env.GITHUB_TOKEN) {
-    console.error("❌ GITHUB_TOKEN não definido.");
-    process.exit(1);
-  }
+/* -------------------------------------------------- */
+/* FETCH GITHUB DATA                                  */
+/* -------------------------------------------------- */
+async function fetchGitHub(){
 
   const query = `
-    query {
-      user(login:"${USER}") {
-        followers { totalCount }
-        repositories(first:100, ownerAffiliations:OWNER) {
-          totalCount
-          nodes { stargazerCount }
+  query {
+    user(login:"${USER}") {
+      followers { totalCount }
+      repositories(first:100, ownerAffiliations:OWNER) {
+        totalCount
+        nodes {
+          name
+          stargazerCount
+          languages(first:10){
+            edges{
+              size
+              node{ name }
+            }
+          }
         }
       }
-    }`;
+    }
+  }`;
 
   const res = await axios.post(
     "https://api.github.com/graphql",
     { query },
     {
-      headers: {
-        Authorization: `Bearer ${process.env.GITHUB_TOKEN}`,
-      },
+      timeout: 15000,
+      headers:{
+        Authorization:`Bearer ${process.env.GITHUB_TOKEN}`
+      }
     }
   );
 
   return res.data.data.user;
 }
 
-function commitAndPush(branch) {
-  execSync("git add -A", { cwd: ROOT });
+/* -------------------------------------------------- */
+/* BUILD LANGUAGE MAP                                 */
+/* -------------------------------------------------- */
+function buildLanguageMap(repositories){
 
-  try {
-    execSync(
-      `git commit -m "♻️ README gerado automaticamente - ${Date.now()}"`,
-      { cwd: ROOT }
-    );
-  } catch {
-    log("ℹ️ Nenhuma alteração detectada.");
-    return;
-  }
+  const map = {};
 
-  execSync(`git push origin ${branch}`, {
-    cwd: ROOT,
-    stdio: "inherit",
+  repositories.forEach(repo=>{
+    repo.languages.edges.forEach(lang=>{
+      const name = lang.node.name;
+      const size = lang.size;
+      map[name] = (map[name] || 0) + size;
+    });
   });
 
-  log("🚀 Commit e push realizados com sucesso.");
+  return map;
 }
 
-async function main() {
-  try {
-    const branch = getCurrentBranch();
+/* -------------------------------------------------- */
+/* SAFE COMMIT                                        */
+/* -------------------------------------------------- */
+function commitIfChanged(){
 
-    // 🔄 Sincroniza primeiro
-    syncWithRemote(branch);
+  execSync("git add README.md assets/dashboard.svg",{cwd:ROOT});
 
-    const now = DateTime.now().setZone(TIMEZONE);
+  try{
+    execSync(`git commit -m "♻️ README auto-update [skip ci]"`,{cwd:ROOT});
+  }catch{
+    log("ℹ️ Nenhuma alteração detectada.");
+    return false;
+  }
 
-    log("🔎 Buscando dados do GitHub...");
-    const user = await fetchGitHub();
+  execSync("git push",{cwd:ROOT,stdio:"inherit"});
+  return true;
+}
 
-    const followers = user.followers.totalCount;
-    const totalProjects = user.repositories.totalCount;
-    const stars = user.repositories.nodes.reduce(
-      (acc, repo) => acc + repo.stargazerCount,
-      0
+/* -------------------------------------------------- */
+/* MAIN                                               */
+/* -------------------------------------------------- */
+async function main(){
+
+  const now = DateTime.now().setZone(TIMEZONE);
+
+  log("🔎 Buscando dados do GitHub...");
+  const user = await fetchGitHub();
+
+  const followers = user.followers.totalCount;
+  const totalProjects = user.repositories.totalCount;
+  const reposRaw = user.repositories.nodes;
+
+  const stars = reposRaw.reduce(
+    (acc,r)=>acc+r.stargazerCount,0
+  );
+
+  const languageMap = buildLanguageMap(reposRaw);
+
+  /* 🔥 FORMATAÇÃO PARA DASHBOARD */
+  const repos = reposRaw.map(r => ({
+    name: r.name,
+    stars: r.stargazerCount,
+    language: r.languages.edges[0]?.node?.name || "—"
+  }));
+
+  /* ----------------------------------------------- */
+  /* GENERATE DASHBOARD SVG                         */
+  /* ----------------------------------------------- */
+  generateSVG({
+    followers,
+    totalProjects,
+    stars,
+    languages: languageMap,
+    repos
+  });
+
+  /* ----------------------------------------------- */
+  /* UPDATE README                                   */
+  /* ----------------------------------------------- */
+  const template = fs.readFileSync(
+    path.join(ROOT,"templates/README.template.md"),
+    "utf8"
+  );
+
+  const finalReadme = template
+    .replace(/{last_update}/g,
+      now.toFormat("dd/MM/yyyy HH:mm:ss"))
+    .replace(/{next_update}/g,
+      now.plus({minutes:INTERVAL})
+      .toFormat("dd/MM/yyyy HH:mm:ss")
     );
 
-    const lastUpdate = now.toFormat("dd/MM/yyyy HH:mm:ss");
-    const nextUpdate = now
-      .plus({ minutes: INTERVAL })
-      .toFormat("dd/MM/yyyy HH:mm:ss");
+  fs.writeFileSync(
+    path.join(ROOT,"README.md"),
+    finalReadme
+  );
 
-    if (!fs.existsSync(TEMPLATE_PATH)) {
-      console.error("❌ Template não encontrado.");
-      process.exit(1);
-    }
-
-    const template = fs.readFileSync(TEMPLATE_PATH, "utf8");
-
-    const finalReadme = template
-      .replace(/{total_projects}/g, totalProjects)
-      .replace(/{followers}/g, followers)
-      .replace(/{stars}/g, stars)
-      .replace(/{last_update}/g, lastUpdate)
-      .replace(/{next_update}/g, nextUpdate);
-
-    fs.writeFileSync(README_PATH, finalReadme);
-
-    log("✅ README.md gerado com sucesso.");
-
-    commitAndPush(branch);
-
-  } catch (error) {
-    console.error("❌ Erro:", error.response?.data || error.message);
-    process.exit(1);
+  if(commitIfChanged()){
+    log("🚀 Atualização enviada.");
   }
+
 }
 
 main();
