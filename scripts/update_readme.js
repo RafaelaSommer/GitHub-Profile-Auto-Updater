@@ -4,198 +4,174 @@ const fs = require("fs");
 const path = require("path");
 const axios = require("axios");
 const { DateTime } = require("luxon");
-require("dotenv").config();
-
-const TIMEOUT_LIMIT = 20 * 60 * 1000;
+const { execSync } = require("child_process");
 
 const ROOT = path.join(__dirname, "..");
+
 const SETTINGS_PATH = path.join(ROOT, ".github/settings.json");
-const LOCK_PATH = path.join(ROOT, ".github/lock.json");
-const LAST_RUN_PATH = path.join(ROOT, ".github/last-run.json");
 const TEMPLATE_PATH = path.join(ROOT, "templates/README.template.md");
 const README_PATH = path.join(ROOT, "README.md");
-const SVG_PATH = path.join(ROOT, "assets/languages.svg");
 
-if (!process.env.GITHUB_TOKEN) {
-  console.error("❌ GITHUB_TOKEN não encontrado.");
+if (!fs.existsSync(SETTINGS_PATH)) {
+  console.error("❌ Arquivo .github/settings.json não encontrado.");
   process.exit(1);
 }
 
-const settings = JSON.parse(fs.readFileSync(SETTINGS_PATH));
-const TIMEZONE = settings.timezone;
-const USER = settings.github_user;
+const SETTINGS = JSON.parse(fs.readFileSync(SETTINGS_PATH));
 
-const timeout = setTimeout(() => {
-  console.error("⛔ Timeout 20min.");
-  releaseLock();
-  process.exit(1);
-}, TIMEOUT_LIMIT);
+const TIMEZONE = SETTINGS.timezone;
+const USER = SETTINGS.github_user;
+const INTERVAL = SETTINGS.interval_minutes;
 
 function log(msg) {
   console.log(`[${new Date().toISOString()}] ${msg}`);
 }
 
-function acquireLock() {
-  if (fs.existsSync(LOCK_PATH)) {
-    const lock = JSON.parse(fs.readFileSync(LOCK_PATH));
-    const diff = Date.now() - new Date(lock.started_at).getTime();
-
-    if (diff < TIMEOUT_LIMIT) {
-      log("⚠ Outro processo em execução.");
-      process.exit(0);
-    }
-  }
-
-  fs.writeFileSync(LOCK_PATH, JSON.stringify({
-    started_at: new Date().toISOString()
-  }));
+function getCurrentBranch() {
+  return execSync("git rev-parse --abbrev-ref HEAD", {
+    cwd: ROOT,
+  })
+    .toString()
+    .trim();
 }
 
-function releaseLock() {
-  if (fs.existsSync(LOCK_PATH)) {
-    fs.unlinkSync(LOCK_PATH);
+function hasLocalChanges() {
+  const status = execSync("git status --porcelain", { cwd: ROOT })
+    .toString()
+    .trim();
+  return status.length > 0;
+}
+
+function syncWithRemote(branch) {
+  log("🔄 Preparando sincronização...");
+
+  try {
+    // Se houver mudanças locais, salva temporariamente
+    if (hasLocalChanges()) {
+      log("💾 Salvando alterações locais (stash)...");
+      execSync("git stash --include-untracked", { cwd: ROOT });
+    }
+
+    log("🌐 Puxando atualizações do remoto...");
+    execSync(`git pull origin ${branch} --rebase`, {
+      cwd: ROOT,
+      stdio: "inherit",
+    });
+
+    // Se houver stash, aplica de volta
+    const stashList = execSync("git stash list", { cwd: ROOT })
+      .toString()
+      .trim();
+
+    if (stashList) {
+      log("📦 Restaurando alterações locais...");
+      execSync("git stash pop", { cwd: ROOT, stdio: "inherit" });
+    }
+
+  } catch (err) {
+    console.error("❌ Erro ao sincronizar com remoto.");
+    process.exit(1);
   }
 }
 
 async function fetchGitHub() {
+  if (!process.env.GITHUB_TOKEN) {
+    console.error("❌ GITHUB_TOKEN não definido.");
+    process.exit(1);
+  }
+
   const query = `
-  query {
-    user(login: "${USER}") {
-      followers { totalCount }
-      repositories(first: 100, ownerAffiliations: OWNER) {
-        totalCount
-        nodes {
-          stargazerCount
-          primaryLanguage { name }
+    query {
+      user(login:"${USER}") {
+        followers { totalCount }
+        repositories(first:100, ownerAffiliations:OWNER) {
+          totalCount
+          nodes { stargazerCount }
         }
       }
-    }
-  }`;
+    }`;
 
   const res = await axios.post(
     "https://api.github.com/graphql",
     { query },
-    { headers: { Authorization: `Bearer ${process.env.GITHUB_TOKEN}` } }
+    {
+      headers: {
+        Authorization: `Bearer ${process.env.GITHUB_TOKEN}`,
+      },
+    }
   );
 
   return res.data.data.user;
 }
 
-function generateSVG(languageData) {
-  const total = Object.values(languageData).reduce((a,b)=>a+b,0);
+function commitAndPush(branch) {
+  execSync("git add -A", { cwd: ROOT });
 
-  const barWidthMax = 420;
-  const barHeight = 18;
-  const spacing = 45;
-  const startY = 70;
+  try {
+    execSync(
+      `git commit -m "♻️ README gerado automaticamente - ${Date.now()}"`,
+      { cwd: ROOT }
+    );
+  } catch {
+    log("ℹ️ Nenhuma alteração detectada.");
+    return;
+  }
 
-  let y = startY;
-  let i = 0;
-  let bars = "";
+  execSync(`git push origin ${branch}`, {
+    cwd: ROOT,
+    stdio: "inherit",
+  });
 
-  const COLORS = [
-    "#FF6B6B","#6BCB77","#4D96FF","#FFD93D",
-    "#845EC2","#FF9671","#00C9A7","#D65DB1",
-    "#2C73D2","#B39CD0"
-  ];
-
-  Object.entries(languageData)
-    .sort((a,b)=>b[1]-a[1])
-    .forEach(([lang,val])=>{
-
-      const percent = ((val/total)*100).toFixed(1);
-      const width = (val/total)*barWidthMax;
-      const color = COLORS[i % COLORS.length];
-
-      bars += `
-        <text x="40" y="${y}" fill="#E6EDF3" font-size="15">
-          ${lang}
-        </text>
-
-        <text x="600" y="${y}" fill="#8B949E" font-size="13" text-anchor="end">
-          ${percent}%
-        </text>
-
-        <rect x="200" y="${y-14}" rx="8"
-          width="${barWidthMax}" height="${barHeight}"
-          fill="#21262D"/>
-
-        <rect x="200" y="${y-14}" rx="8"
-          width="0" height="${barHeight}"
-          fill="${color}">
-          <animate attributeName="width"
-                   from="0"
-                   to="${width}"
-                   dur="1.4s"
-                   fill="freeze"/>
-        </rect>
-      `;
-
-      y += spacing;
-      i++;
-    });
-
-  const height = y + 40;
-
-  return `
-  <svg width="700" height="${height}" xmlns="http://www.w3.org/2000/svg">
-    <rect width="100%" height="100%" fill="#0D1117"/>
-
-    <text x="40" y="40"
-      fill="#58A6FF"
-      font-size="20"
-      font-weight="bold">
-      📊 Linguagens mais utilizadas
-    </text>
-
-    ${bars}
-  </svg>`;
+  log("🚀 Commit e push realizados com sucesso.");
 }
 
 async function main() {
-  acquireLock();
-  log("🚀 Atualização iniciada");
-
   try {
+    const branch = getCurrentBranch();
+
+    // 🔄 Sincroniza primeiro
+    syncWithRemote(branch);
+
     const now = DateTime.now().setZone(TIMEZONE);
+
+    log("🔎 Buscando dados do GitHub...");
     const user = await fetchGitHub();
 
-    const repos = user.repositories.nodes;
     const followers = user.followers.totalCount;
     const totalProjects = user.repositories.totalCount;
-    const stars = repos.reduce((a,b)=>a+b.stargazerCount,0);
+    const stars = user.repositories.nodes.reduce(
+      (acc, repo) => acc + repo.stargazerCount,
+      0
+    );
 
-    const langCount = {};
-    repos.forEach(r=>{
-      const lang = r.primaryLanguage?.name || "Other";
-      langCount[lang] = (langCount[lang]||0)+1;
-    });
+    const lastUpdate = now.toFormat("dd/MM/yyyy HH:mm:ss");
+    const nextUpdate = now
+      .plus({ minutes: INTERVAL })
+      .toFormat("dd/MM/yyyy HH:mm:ss");
 
-    fs.mkdirSync(path.join(ROOT,"assets"),{recursive:true});
-    fs.writeFileSync(SVG_PATH, generateSVG(langCount));
+    if (!fs.existsSync(TEMPLATE_PATH)) {
+      console.error("❌ Template não encontrado.");
+      process.exit(1);
+    }
 
-    const template = fs.readFileSync(TEMPLATE_PATH,"utf8");
+    const template = fs.readFileSync(TEMPLATE_PATH, "utf8");
 
-    const content = template
-      .replace("{followers}",followers)
-      .replace("{stars}",stars)
-      .replace("{total_projects}",totalProjects)
-      .replace("{last_update}",now.toFormat("dd/MM/yyyy HH:mm"))
-      .replace("{next_update}",now.plus({minutes:20}).toFormat("dd/MM/yyyy HH:mm"));
+    const finalReadme = template
+      .replace(/{total_projects}/g, totalProjects)
+      .replace(/{followers}/g, followers)
+      .replace(/{stars}/g, stars)
+      .replace(/{last_update}/g, lastUpdate)
+      .replace(/{next_update}/g, nextUpdate);
 
-    fs.writeFileSync(README_PATH,content);
+    fs.writeFileSync(README_PATH, finalReadme);
 
-    fs.writeFileSync(LAST_RUN_PATH, JSON.stringify({
-      last_run: now.toISO()
-    },null,2));
+    log("✅ README.md gerado com sucesso.");
 
-    log("✅ Atualização concluída");
+    commitAndPush(branch);
 
-  } catch(err) {
-    log("❌ Erro: "+err.message);
-  } finally {
-    releaseLock();
-    clearTimeout(timeout);
+  } catch (error) {
+    console.error("❌ Erro:", error.response?.data || error.message);
+    process.exit(1);
   }
 }
 

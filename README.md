@@ -103,23 +103,19 @@ Workflows que executam os scripts automaticamente.
 
 ---
 
-## 📊 Dashboard de Linguagens
+## 📊 Dashboard
 
-![Languages Dashboard](./assets/languages.svg)
+![Dashboard](./assets/dashboard.svg)
 
 ---
 
-## 📊 Última Atualização Automática
+## 🔄 Atualização Automática
 
-📦 **Total de projetos:** 9  
-👥 **Seguidores:** 316  
-⭐ **Total de Stars recebidas:** 15  
+🕒 Última atualização:  
+05/03/2026 16:00:23 (Horário de Brasília)
 
-🕒 **Última atualização:**  
-03/03/2026 16:44 (Horário de Brasília)
-
-🔄 **Próxima atualização automática:**  
-03/03/2026 17:04 (Horário de Brasília)
+🔁 Próxima atualização automática:  
+05/03/2026 16:20:23 (Horário de Brasília)
 
 ---
 

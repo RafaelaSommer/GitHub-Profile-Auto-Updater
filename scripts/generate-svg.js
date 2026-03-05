@@ -2,44 +2,95 @@ const fs = require("fs");
 const path = require("path");
 
 const COLORS = [
-"#FF6B6B","#6BCB77","#4D96FF","#FFD93D","#845EC2","#FF9671","#00C9A7","#C34A36","#0081CF","#B0A8B9",
-"#FF8066","#FFC75F","#F9F871","#008E9B","#D65DB1","#2C73D2","#008F7A","#C34A36","#FF9671","#FFC75F",
-"#F9F871","#008E9B","#D65DB1","#2C73D2","#008F7A","#845EC2","#FF6F91","#FF9671","#00C9A7","#4D8076",
-"#B39CD0","#FF8066","#4B4453","#C34A36","#0081CF","#6A0572","#AB83A1","#FFAAA5","#00ADB5","#393E46",
-"#F67280","#355C7D","#99B898","#2A363B","#E84A5F","#FF847C","#FECEA8","#A8E6CF","#DCEDC1","#FFD3B6",
-"#FFAAA6","#A8E6CF","#FFD3B6","#FF8B94","#DCE775","#80DEEA","#CFD8DC","#B39DDB","#FFCC80","#90CAF9"
+"#FF6B6B","#6BCB77","#4D96FF","#FFD93D","#845EC2","#FF9671","#00C9A7","#C34A36",
+"#0081CF","#B39CD0","#FF8066","#FFC75F","#F9F871","#008E9B","#D65DB1","#2C73D2"
 ];
 
 function generateSVG(languageData) {
   const total = Object.values(languageData).reduce((a,b)=>a+b,0);
-  let y = 50;
+
+  const width = 760;
+  const cardPadding = 30;
+  const barMaxWidth = 420;
+
+  let y = 120;
   let i = 0;
   let bars = "";
 
-  Object.entries(languageData)
-    .sort((a,b)=>b[1]-a[1])
-    .forEach(([lang,val])=>{
-      const width = (val/total)*400;
-      const color = COLORS[i % COLORS.length];
+  const sorted = Object.entries(languageData)
+    .sort((a,b)=>b[1]-a[1]);
 
-      bars += `
-      <text x="20" y="${y}" fill="#ffffff" font-size="14">${lang} (${val})</text>
-      <rect x="180" y="${y-12}" width="0" height="15" fill="${color}">
-        <animate attributeName="width" from="0" to="${width}" dur="1.2s" fill="freeze"/>
+  sorted.forEach(([lang,val])=>{
+
+    const percent = ((val/total)*100).toFixed(1);
+    const barWidth = (val/total)*barMaxWidth;
+    const color = COLORS[i % COLORS.length];
+
+    bars += `
+      <!-- Nome linguagem -->
+      <text x="${cardPadding}" y="${y}" fill="#E6EDF3" font-size="15" font-weight="500">
+        ${lang}
+      </text>
+
+      <!-- Percentual -->
+      <text x="${width-40}" y="${y}" fill="#8B949E" font-size="13" text-anchor="end">
+        ${percent}%
+      </text>
+
+      <!-- Background bar -->
+      <rect x="220" y="${y-14}" rx="10"
+        width="${barMaxWidth}" height="16"
+        fill="#21262D"/>
+
+      <!-- Animated bar -->
+      <rect x="220" y="${y-14}" rx="10"
+        width="0" height="16"
+        fill="${color}">
+        <animate attributeName="width"
+                 from="0"
+                 to="${barWidth}"
+                 dur="1.4s"
+                 fill="freeze"/>
       </rect>
-      `;
-      y+=35;
-      i++;
-    });
+    `;
+
+    y += 45;
+    i++;
+  });
+
+  const height = y + 40;
 
   return `
-  <svg width="700" height="${y}" xmlns="http://www.w3.org/2000/svg">
-    <rect width="100%" height="100%" fill="#0d1117"/>
-    <text x="20" y="25" fill="#58a6ff" font-size="18">
-      📊 Linguagens mais usadas
+  <svg width="${width}" height="${height}" xmlns="http://www.w3.org/2000/svg">
+
+    <!-- Fundo -->
+    <rect width="100%" height="100%" fill="#0D1117"/>
+
+    <!-- Card -->
+    <rect x="10" y="10" width="${width-20}" height="${height-20}"
+      rx="20"
+      fill="#161B22"
+      stroke="#30363D"
+      stroke-width="1"/>
+
+    <!-- Header -->
+    <text x="${cardPadding}" y="60"
+      fill="#58A6FF"
+      font-size="22"
+      font-weight="bold">
+      🚀 GitHub Premium Languages Dashboard
     </text>
+
+    <text x="${cardPadding}" y="85"
+      fill="#8B949E"
+      font-size="13">
+      Distribuição das linguagens mais utilizadas
+    </text>
+
     ${bars}
-  </svg>`;
+
+  </svg>
+  `;
 }
 
 module.exports = generateSVG;

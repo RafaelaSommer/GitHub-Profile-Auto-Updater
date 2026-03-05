@@ -7,10 +7,7 @@
     "end": 23
   },
 
-  "fixed_interval_hours": 2,
-  "enable_interval_minutes": true,
   "interval_minutes": 20,
-  "interval_only_business_hours": true,
 
   "gitUser": "RafaelaSommer",
   "gitEmail": "camilaerafaelagoncalves@hotmail.com"
