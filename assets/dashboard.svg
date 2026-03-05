@@ -53,13 +53,13 @@
         fill="#FF6B6B">
         <animate attributeName="width"
                  from="0"
-                 to="292"
+                 to="292.5"
                  dur="1.2s"
                  fill="freeze"/>
       </rect>
 
       <text x="730" y="200" fill="#8B949E" font-size="12">
-        58.4%
+        58.5%
       </text>
     
       <text x="60" y="240" fill="#E6EDF3" font-size="14">
