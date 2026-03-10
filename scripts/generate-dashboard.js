@@ -75,13 +75,26 @@ function generateDashboard(data){
   let repoList = "";
 
   repos
-    .sort((a,b)=>(b.stars || 0) - (a.stars || 0))
+    .sort((a,b)=>{
+      const starsA = a.stars ?? a.stargazerCount ?? 0
+      const starsB = b.stars ?? b.stargazerCount ?? 0
+      return starsB - starsA
+    })
     .forEach(repo=>{
+
+      const repoStars = repo.stars ?? repo.stargazerCount ?? 0
+
       repoList += `
         <text x="${cardPadding}" y="${y}"
           fill="#58A6FF"
           font-size="14">
-          ⭐ ${repo.stars || 0} — ${repo.name}
+          📦 ${repo.name}
+        </text>
+
+        <text x="${cardPadding+350}" y="${y}"
+          fill="#FFD93D"
+          font-size="14">
+          ⭐ ${repoStars}
         </text>
 
         <text x="${cardPadding+450}" y="${y}"

@@ -190,7 +190,13 @@
         <text x="60" y="570"
           fill="#58A6FF"
           font-size="14">
-          ⭐ 4 — Gerador-de-pastas-e-Excel
+          📦 Gerador-de-pastas-e-Excel
+        </text>
+
+        <text x="410" y="570"
+          fill="#FFD93D"
+          font-size="14">
+          ⭐ 4
         </text>
 
         <text x="510" y="570"
@@ -202,7 +208,13 @@
         <text x="60" y="598"
           fill="#58A6FF"
           font-size="14">
-          ⭐ 3 — dio-lab-open-source
+          📦 dio-lab-open-source
+        </text>
+
+        <text x="410" y="598"
+          fill="#FFD93D"
+          font-size="14">
+          ⭐ 3
         </text>
 
         <text x="510" y="598"
@@ -214,7 +226,13 @@
         <text x="60" y="626"
           fill="#58A6FF"
           font-size="14">
-          ⭐ 0 — trilha-net-fundamentos-desafio
+          📦 trilha-net-fundamentos-desafio
+        </text>
+
+        <text x="410" y="626"
+          fill="#FFD93D"
+          font-size="14">
+          ⭐ 0
         </text>
 
         <text x="510" y="626"
@@ -226,19 +244,31 @@
         <text x="60" y="654"
           fill="#58A6FF"
           font-size="14">
-          ⭐ 0 — github-readme-stats
+          📦 github-readme-stats
+        </text>
+
+        <text x="410" y="654"
+          fill="#FFD93D"
+          font-size="14">
+          ⭐ 0
         </text>
 
         <text x="510" y="654"
           fill="#8B949E"
           font-size="12">
-          Shell
+          JavaScript
         </text>
       
         <text x="60" y="682"
           fill="#58A6FF"
           font-size="14">
-          ⭐ 0 — trilha-net-explorando-desafio
+          📦 trilha-net-explorando-desafio
+        </text>
+
+        <text x="410" y="682"
+          fill="#FFD93D"
+          font-size="14">
+          ⭐ 0
         </text>
 
         <text x="510" y="682"
@@ -250,7 +280,13 @@
         <text x="60" y="710"
           fill="#58A6FF"
           font-size="14">
-          ⭐ 0 — trilha-net-poo-desafio
+          📦 trilha-net-poo-desafio
+        </text>
+
+        <text x="410" y="710"
+          fill="#FFD93D"
+          font-size="14">
+          ⭐ 0
         </text>
 
         <text x="510" y="710"
@@ -262,7 +298,13 @@
         <text x="60" y="738"
           fill="#58A6FF"
           font-size="14">
-          ⭐ 0 — trilha-net-banco-de-dados-desafio
+          📦 trilha-net-banco-de-dados-desafio
+        </text>
+
+        <text x="410" y="738"
+          fill="#FFD93D"
+          font-size="14">
+          ⭐ 0
         </text>
 
         <text x="510" y="738"
@@ -274,7 +316,13 @@
         <text x="60" y="766"
           fill="#58A6FF"
           font-size="14">
-          ⭐ 0 — GitHub-Profile-Auto-Updater
+          📦 GitHub-Profile-Auto-Updater
+        </text>
+
+        <text x="410" y="766"
+          fill="#FFD93D"
+          font-size="14">
+          ⭐ 0
         </text>
 
         <text x="510" y="766"
@@ -286,7 +334,13 @@
         <text x="60" y="794"
           fill="#58A6FF"
           font-size="14">
-          ⭐ 0 — RafaelaSommer
+          📦 RafaelaSommer
+        </text>
+
+        <text x="410" y="794"
+          fill="#FFD93D"
+          font-size="14">
+          ⭐ 0
         </text>
 
         <text x="510" y="794"

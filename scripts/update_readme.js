@@ -1,164 +1,246 @@
 #!/usr/bin/env node
 
-const fs = require("fs");
-const path = require("path");
-const axios = require("axios");
-const { DateTime } = require("luxon");
-const { execSync } = require("child_process");
-const generateSVG = require("./generate-dashboard");
+require("dotenv").config()
 
-const ROOT = path.join(__dirname, "..");
+const fs = require("fs")
+const path = require("path")
+const axios = require("axios")
+const { DateTime } = require("luxon")
+const { execSync } = require("child_process")
+const generateDashboard = require("./generate-dashboard")
+const { readCache, writeCache } = require("./cache")
+
+const ROOT = path.join(__dirname,"..")
 
 const SETTINGS = JSON.parse(
-  fs.readFileSync(path.join(ROOT, ".github/settings.json"))
-);
+  fs.readFileSync(path.join(ROOT,".github/settings.json"))
+)
 
-const TIMEZONE = SETTINGS.timezone;
-const USER = SETTINGS.github_user;
-const INTERVAL = SETTINGS.interval_minutes;
+const USER = SETTINGS.github_user
+const TIMEZONE = SETTINGS.timezone
+const INTERVAL = SETTINGS.interval_minutes
 
-function log(msg){
-  console.log(`[${new Date().toISOString()}] ${msg}`);
+const TOKEN = process.env.GITHUB_TOKEN
+
+if(!TOKEN){
+  console.error("❌ GITHUB_TOKEN não encontrado no .env")
+  process.exit(1)
 }
 
-/* -------------------------------------------------- */
-/* FETCH GITHUB DATA                                  */
-/* -------------------------------------------------- */
+function configureGit(){
+
+  try{
+
+    execSync(`git config user.name "${SETTINGS.gitUser}"`,{cwd:ROOT})
+    execSync(`git config user.email "${SETTINGS.gitEmail}"`,{cwd:ROOT})
+
+    const repo = `https://${TOKEN}@github.com/${USER}/${USER}.git`
+
+    execSync(`git remote set-url origin ${repo}`,{cwd:ROOT})
+
+  }catch(e){
+
+    console.log("git já configurado")
+
+  }
+
+}
+
 async function fetchGitHub(){
 
-  const query = `
-  query {
-    user(login:"${USER}") {
-      followers { totalCount }
-      repositories(first:100, ownerAffiliations:OWNER) {
-        totalCount
-        nodes {
-          name
-          stargazerCount
-          languages(first:10){
-            edges{
-              size
-              node{ name }
+  try{
+
+    let hasNextPage = true
+    let cursor = null
+
+    let allRepos = []
+    let followers = 0
+
+    while(hasNextPage){
+
+      const query = `
+      query {
+        user(login:"${USER}") {
+          followers { totalCount }
+          repositories(first:100 ${cursor ? `after:"${cursor}"` : ""}) {
+            pageInfo {
+              hasNextPage
+              endCursor
+            }
+            nodes {
+              name
+              stargazerCount
+              primaryLanguage { name }
+              languages(first:5){
+                edges{
+                  size
+                  node{ name }
+                }
+              }
             }
           }
         }
+      }`
+
+      const res = await axios.post(
+        "https://api.github.com/graphql",
+        {query},
+        {
+          headers:{
+            Authorization:`Bearer ${TOKEN}`
+          }
+        }
+      )
+
+      const user = res.data.data.user
+
+      followers = user.followers.totalCount
+
+      const repos = user.repositories.nodes
+
+      allRepos = allRepos.concat(repos)
+
+      hasNextPage = user.repositories.pageInfo.hasNextPage
+      cursor = user.repositories.pageInfo.endCursor
+
+    }
+
+    const data = {
+      followers,
+      repositories:{
+        nodes:allRepos
       }
     }
-  }`;
 
-  const res = await axios.post(
-    "https://api.github.com/graphql",
-    { query },
-    {
-      timeout: 15000,
-      headers:{
-        Authorization:`Bearer ${process.env.GITHUB_TOKEN}`
-      }
+    writeCache({
+      lastFetch:Date.now(),
+      data
+    })
+
+    return data
+
+  }catch(err){
+
+    console.log("⚠️ API falhou, usando cache")
+
+    const cache = readCache()
+
+    if(cache.data){
+      return cache.data
     }
-  );
 
-  return res.data.data.user;
-}
+    throw err
 
-/* -------------------------------------------------- */
-/* BUILD LANGUAGE MAP                                 */
-/* -------------------------------------------------- */
-function buildLanguageMap(repositories){
-
-  const map = {};
-
-  repositories.forEach(repo=>{
-    repo.languages.edges.forEach(lang=>{
-      const name = lang.node.name;
-      const size = lang.size;
-      map[name] = (map[name] || 0) + size;
-    });
-  });
-
-  return map;
-}
-
-/* -------------------------------------------------- */
-/* SAFE COMMIT                                        */
-/* -------------------------------------------------- */
-function commitIfChanged(){
-
-  execSync("git add README.md assets/dashboard.svg",{cwd:ROOT});
-
-  try{
-    execSync(`git commit -m "♻️ README auto-update [skip ci]"`,{cwd:ROOT});
-  }catch{
-    log("ℹ️ Nenhuma alteração detectada.");
-    return false;
   }
 
-  execSync("git push",{cwd:ROOT,stdio:"inherit"});
-  return true;
 }
 
-/* -------------------------------------------------- */
-/* MAIN                                               */
-/* -------------------------------------------------- */
+function buildLanguages(repos){
+
+  const map = {}
+
+  repos.forEach(r=>{
+
+    if(!r.languages) return
+
+    r.languages.edges.forEach(lang=>{
+
+      const name = lang.node.name
+      map[name]=(map[name]||0)+lang.size
+
+    })
+
+  })
+
+  return map
+}
+
+function commit(){
+
+  try{
+
+    execSync("git add .",{cwd:ROOT})
+
+    const status = execSync(
+      "git status --porcelain",
+      {cwd:ROOT}
+    ).toString()
+
+    if(!status){
+      console.log("📭 Nenhuma Mudança")
+      return
+    }
+
+    const msg = `🤖 Auto Update ${DateTime.now().toFormat("HH:mm:ss")}`
+
+    execSync(
+      `git commit -m "${msg}"`,
+      {cwd:ROOT,stdio:"inherit"}
+    )
+
+    execSync(
+      "git push origin HEAD",
+      {cwd:ROOT,stdio:"inherit"}
+    )
+
+    console.log("🚀 Push Realizado com sucesso!")
+
+  }catch(e){
+
+    console.error("erro git:",e.message)
+
+  }
+
+}
+
 async function main(){
 
-  const now = DateTime.now().setZone(TIMEZONE);
+  configureGit()
 
-  log("🔎 Buscando dados do GitHub...");
-  const user = await fetchGitHub();
+  const now = DateTime.now().setZone(TIMEZONE)
 
-  const followers = user.followers.totalCount;
-  const totalProjects = user.repositories.totalCount;
-  const reposRaw = user.repositories.nodes;
+  const user = await fetchGitHub()
 
-  const stars = reposRaw.reduce(
-    (acc,r)=>acc+r.stargazerCount,0
-  );
+  const repos = user.repositories.nodes
 
-  const languageMap = buildLanguageMap(reposRaw);
+  const followers = user.followers
 
-  /* 🔥 FORMATAÇÃO PARA DASHBOARD */
-  const repos = reposRaw.map(r => ({
-    name: r.name,
-    stars: r.stargazerCount,
-    language: r.languages.edges[0]?.node?.name || "—"
-  }));
+  const stars = repos.reduce(
+    (a,r)=>a+(r.stargazerCount || 0),0
+  )
 
-  /* ----------------------------------------------- */
-  /* GENERATE DASHBOARD SVG                         */
-  /* ----------------------------------------------- */
-  generateSVG({
+  const languages = buildLanguages(repos)
+
+  const formattedRepos = repos.map(r=>({
+    name:r.name,
+    stars:r.stargazerCount,
+    language:r.primaryLanguage
+      ? r.primaryLanguage.name
+      : "—"
+  }))
+
+  generateDashboard({
     followers,
-    totalProjects,
+    totalProjects: repos.length,
     stars,
-    languages: languageMap,
-    repos
-  });
+    languages,
+    repos: formattedRepos
+  })
 
-  /* ----------------------------------------------- */
-  /* UPDATE README                                   */
-  /* ----------------------------------------------- */
   const template = fs.readFileSync(
     path.join(ROOT,"templates/README.template.md"),
     "utf8"
-  );
+  )
 
-  const finalReadme = template
-    .replace(/{last_update}/g,
-      now.toFormat("dd/MM/yyyy HH:mm:ss"))
-    .replace(/{next_update}/g,
-      now.plus({minutes:INTERVAL})
-      .toFormat("dd/MM/yyyy HH:mm:ss")
-    );
+  const readme = template
+  .replace("{last_update}",now.toFormat("dd/MM/yyyy HH:mm:ss"))
+  .replace("{next_update}",now.plus({minutes:INTERVAL}).toFormat("dd/MM/yyyy HH:mm:ss"))
+  + `\n<!-- ${Date.now()} -->`
 
-  fs.writeFileSync(
-    path.join(ROOT,"README.md"),
-    finalReadme
-  );
+  fs.writeFileSync(path.join(ROOT,"README.md"),readme)
 
-  if(commitIfChanged()){
-    log("🚀 Atualização enviada.");
-  }
+  commit()
 
 }
 
-main();
+main()
