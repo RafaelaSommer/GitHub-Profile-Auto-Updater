@@ -18,7 +18,7 @@
     <text x="60" y="130"
       fill="#E6EDF3"
       font-size="16">
-      👥 324 Seguidores
+      👥 335 Seguidores
     </text>
 
     <text x="360" y="130"
@@ -30,7 +30,7 @@
     <text x="660" y="130"
       fill="#E6EDF3"
       font-size="16">
-      ⭐ 15 Stars
+      ⭐ 7 Stars
     </text>
 
     <text x="60" y="170"
@@ -53,13 +53,13 @@
         fill="#FF6B6B">
         <animate attributeName="width"
                  from="0"
-                 to="292.5"
+                 to="293.5"
                  dur="1.2s"
                  fill="freeze"/>
       </rect>
 
       <text x="730" y="200" fill="#8B949E" font-size="12">
-        58.5%
+        58.7%
       </text>
     
       <text x="60" y="240" fill="#E6EDF3" font-size="14">
@@ -75,13 +75,13 @@
         fill="#6BCB77">
         <animate attributeName="width"
                  from="0"
-                 to="180.5"
+                 to="179.5"
                  dur="1.2s"
                  fill="freeze"/>
       </rect>
 
       <text x="730" y="240" fill="#8B949E" font-size="12">
-        36.1%
+        35.9%
       </text>
     
       <text x="60" y="280" fill="#E6EDF3" font-size="14">
@@ -190,67 +190,67 @@
         <text x="60" y="570"
           fill="#58A6FF"
           font-size="14">
-          ⭐ 8 — RafaelaSommer
+          ⭐ 4 — Gerador-de-pastas-e-Excel
         </text>
 
         <text x="510" y="570"
           fill="#8B949E"
           font-size="12">
-          JavaScript
+          Python
         </text>
       
         <text x="60" y="598"
           fill="#58A6FF"
           font-size="14">
-          ⭐ 4 — Gerador-de-pastas-e-Excel
+          ⭐ 3 — dio-lab-open-source
         </text>
 
         <text x="510" y="598"
           fill="#8B949E"
           font-size="12">
-          Python
+          Jupyter Notebook
         </text>
       
         <text x="60" y="626"
           fill="#58A6FF"
           font-size="14">
-          ⭐ 3 — dio-lab-open-source
+          ⭐ 0 — trilha-net-fundamentos-desafio
         </text>
 
         <text x="510" y="626"
           fill="#8B949E"
           font-size="12">
-          Jupyter Notebook
+          C#
         </text>
       
         <text x="60" y="654"
           fill="#58A6FF"
           font-size="14">
-          ⭐ 0 — trilha-net-fundamentos-desafio
+          ⭐ 0 — github-readme-stats
         </text>
 
         <text x="510" y="654"
           fill="#8B949E"
           font-size="12">
-          C#
+          Shell
         </text>
       
         <text x="60" y="682"
           fill="#58A6FF"
           font-size="14">
-          ⭐ 0 — github-readme-stats
+          ⭐ 0 — trilha-net-explorando-desafio
         </text>
 
         <text x="510" y="682"
           fill="#8B949E"
           font-size="12">
-          Shell
+          C#
         </text>
       
         <text x="60" y="710"
           fill="#58A6FF"
           font-size="14">
-          ⭐ 0 — trilha-net-explorando-desafio
+          ⭐ 0 — trilha-net-poo-desafio
         </text>
 
         <text x="510" y="710"
@@ -262,31 +262,31 @@
         <text x="60" y="738"
           fill="#58A6FF"
           font-size="14">
-          ⭐ 0 — trilha-net-poo-desafio
+          ⭐ 0 — trilha-net-banco-de-dados-desafio
         </text>
 
         <text x="510" y="738"
           fill="#8B949E"
           font-size="12">
-          C#
+          TSQL
         </text>
       
         <text x="60" y="766"
           fill="#58A6FF"
           font-size="14">
-          ⭐ 0 — trilha-net-banco-de-dados-desafio
+          ⭐ 0 — GitHub-Profile-Auto-Updater
         </text>
 
         <text x="510" y="766"
           fill="#8B949E"
           font-size="12">
-          TSQL
+          JavaScript
         </text>
       
         <text x="60" y="794"
           fill="#58A6FF"
           font-size="14">
-          ⭐ 0 — GitHub-Profile-Auto-Updater
+          ⭐ 0 — RafaelaSommer
         </text>
 
         <text x="510" y="794"

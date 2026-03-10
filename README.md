@@ -22,7 +22,7 @@ Ele coleta informações do próprio GitHub, gera dashboards e badges, e mantém
 
 - `generate-cron.js` — Calcula os próximos horários de execução e controla o agendamento.  
 - `update-readme.js` — Script principal que atualiza o `README.md` a partir do template.  
-- `generate-dashboard.js` — Gera badges e dashboards em SVG com base nas estatísticas.  
+- `generate-svg.js` — Gera badges e dashboards em SVG com base nas estatísticas.  
 - `bot-local.js` — Permite execução local e testes do bot.  
 - `iniciar-bot.bat` — Script para iniciar o bot diretamente no Windows.
 
@@ -112,10 +112,10 @@ Workflows que executam os scripts automaticamente.
 ## 🔄 Atualização Automática
 
 🕒 Última atualização:  
-05/03/2026 16:32:17 (Horário de Brasília)
+10/03/2026 16:11:20 (Horário de Brasília)
 
 🔁 Próxima atualização automática:  
-05/03/2026 16:52:17 (Horário de Brasília)
+10/03/2026 16:31:20 (Horário de Brasília)
 
 ---
 
