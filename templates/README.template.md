@@ -109,6 +109,8 @@ Workflows que executam os scripts automaticamente.
 
 ---
 
+<!--START_SECTION:dynamic-->
+
 ## 🔄 Atualização Automática
 
 🕒 Última atualização:  
@@ -116,6 +118,8 @@ Workflows que executam os scripts automaticamente.
 
 🔁 Próxima atualização automática:  
 {next_update} (Horário de Brasília)
+
+<!--END_SECTION:dynamic-->
 
 ---
 

@@ -1,15 +1,12 @@
 {
   "name": "github-profile-auto-updater",
   "version": "1.0.0",
-  "description": "Automated GitHub profile README updater using Node.js and GitHub Actions.",
+  "description": "Automated GitHub profile README updater using Node.js",
   "main": "scripts/update_readme.js",
   "type": "commonjs",
   "private": false,
   "scripts": {
-    "generate": "node scripts/generate-cron.js",
-    "update": "node scripts/update_readme.js",
-    "start": "node scripts/bot-local.js",
-    "generate:svg": "node scripts/generate-dashboard.js"
+    "start": "node scripts/bot-local.js"
   },
   "repository": {
     "type": "git",
@@ -17,15 +14,10 @@
   },
   "author": "Rafaela Sommer",
   "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/RafaelaSommer/GitHub-Profile-Auto-Updater/issues"
-  },
-  "homepage": "https://github.com/RafaelaSommer/GitHub-Profile-Auto-Updater#readme",
   "engines": {
     "node": ">=18"
   },
   "dependencies": {
-    "axios": "^1.13.6",
     "dotenv": "^16.6.1",
     "luxon": "^3.7.2"
   }

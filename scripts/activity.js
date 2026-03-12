@@ -3,10 +3,10 @@ const path = require("path")
 const { execSync } = require("child_process")
 const { DateTime } = require("luxon")
 
-const ROOT = path.join(__dirname,"..")
-const activityDir = path.join(ROOT,"activity")
+const ROOT = path.join(__dirname, "..")
+const activityDir = path.join(ROOT, "activity")
 
-function randomMessage(){
+function randomMessage() {
 
   const msgs = [
     "✨ Atualização de projeto",
@@ -18,13 +18,13 @@ function randomMessage(){
     "⚡ Otimizações internas"
   ]
 
-  return msgs[Math.floor(Math.random()*msgs.length)]
+  return msgs[Math.floor(Math.random() * msgs.length)]
 }
 
-function createActivityFile(){
+function createActivityFile() {
 
-  if(!fs.existsSync(activityDir)){
-    fs.mkdirSync(activityDir,{recursive:true})
+  if (!fs.existsSync(activityDir)) {
+    fs.mkdirSync(activityDir, { recursive: true })
   }
 
   const file = path.join(
@@ -47,25 +47,25 @@ Timestamp: ${now}
   return file
 }
 
-function commit(file){
+function commit(file) {
 
-  try{
+  try {
 
-    execSync(`git add ${file}`,{cwd:ROOT})
+    execSync(`git add ${file}`, { cwd: ROOT })
 
     execSync(
       `git commit -m "${randomMessage()}"`,
-      {cwd:ROOT,stdio:"inherit"}
+      { cwd: ROOT, stdio: "inherit" }
     )
 
     execSync(
-      "git push origin HEAD",
-      {cwd:ROOT,stdio:"inherit"}
+      "git push https://github.com/RafaelaSommer/GitHub-Profile-Auto-Updater.git HEAD",
+      { cwd: ROOT, stdio: "inherit" }
     )
 
     console.log("🚀 Commit automático realizado")
 
-  }catch(e){
+  } catch (e) {
 
     console.log("⚠️ Commit não realizado")
 
@@ -73,7 +73,7 @@ function commit(file){
 
 }
 
-function main(){
+function main() {
 
   const file = createActivityFile()
 
