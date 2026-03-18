@@ -31,7 +31,7 @@ if (interval < 5) {
 }
 
 const workflow = `
-name: 🤖 Update README
+name: Update README
 
 on:
   schedule:
@@ -44,38 +44,40 @@ permissions:
 jobs:
   update:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
 
     steps:
-      - name: 📥 Checkout
+      - name: Checkout
         uses: actions/checkout@v4
 
-      - name: 🟢 Setup Node
+      - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: "20"
+          node-version: 20
 
-      - name: 📦 Instalar dependências
+      - name: Install deps
         run: npm install axios luxon
 
-      - name: 🔄 Atualizar README
-        run: node scripts/index.js
-        run: node scripts/update_readme.js
+      - name: Update dashboard and README
+        run: |
+          node scripts/index.js
+          node scripts/update_readme.js
         env:
           GITHUB_TOKEN: \${{ secrets.GITHUB_TOKEN }}
 
-      - name: 💾 Commit e Push
+      - name: Commit and push
         run: |
           git config user.name "RafaelaSommer"
           git config user.email "camilaerafaelagoncalves@hotmail.com"
 
           git pull origin main --rebase
 
-          git diff --quiet && echo "Sem mudanças" || (
+          if git diff --quiet; then
+            echo "No changes"
+          else
             git add .
-            git commit -m "🤖 auto update"
+            git commit -m "auto update"
             git push origin main
-          )
+          fi
 `;
 
 const workflowDir = path.join(ROOT, ".github", "workflows");
