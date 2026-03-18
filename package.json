@@ -9,7 +9,8 @@
     "start": "node scripts/bot-local.js",
     "update": "node scripts/update_readme.js",
     "generate:svg": "node scripts/generate-dashboard.js",
-    "generate:cron": "node scripts/generate-cron.js"
+    "generate:cron": "node scripts/generate-cron.js",
+    "index": "node scripts/index.js"
   },
   "repository": {
     "type": "git",

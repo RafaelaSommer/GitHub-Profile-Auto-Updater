@@ -177,4 +177,4 @@ function generateDashboard(data){
   console.log("✅ Dashboard gerado com sucesso.");
 }
 
-module.exports = generate-dashboard;
+module.exports = generateDashboard;
