@@ -2,7 +2,7 @@ name: 🤖 Update README
 
 on:
   schedule:
-    - cron: "*/20 * * * *"
+    - cron: "*/5 * * * *"
   workflow_dispatch:
 
 permissions:
@@ -11,17 +11,35 @@ permissions:
 jobs:
   update:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 15
 
     steps:
-      - uses: actions/checkout@v4
+      - name: 📥 Checkout
+        uses: actions/checkout@v4
 
-      - uses: actions/setup-node@v4
+      - name: 🟢 Setup Node
+        uses: actions/setup-node@v4
         with:
           node-version: "20"
 
-      - run: npm install axios luxon
+      - name: 📦 Instalar dependências
+        run: npm install axios luxon
 
-      - run: node scripts/update_readme.js
+      - name: 🔄 Atualizar README
+        run: node scripts/index.js
+        run: node scripts/update_readme.js
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: 💾 Commit e Push
+        run: |
+          git config user.name "RafaelaSommer"
+          git config user.email "camilaerafaelagoncalves@hotmail.com"
+
+          git pull origin main --rebase
+
+          git diff --quiet && echo "Sem mudanças" || (
+            git add .
+            git commit -m "🤖 auto update"
+            git push origin main
+          )

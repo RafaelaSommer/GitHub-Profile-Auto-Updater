@@ -105,7 +105,9 @@ Workflows que executam os scripts automaticamente.
 
 ## 📊 Dashboard
 
-![Dashboard](./assets/dashboard.svg)
+<p align="center">
+  <img src="./assets/dashboard.svg" />
+</p>
 
 ---
 

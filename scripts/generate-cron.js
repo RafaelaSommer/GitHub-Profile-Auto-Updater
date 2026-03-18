@@ -59,9 +59,23 @@ jobs:
         run: npm install axios luxon
 
       - name: 🔄 Atualizar README
+        run: node scripts/index.js
         run: node scripts/update_readme.js
         env:
           GITHUB_TOKEN: \${{ secrets.GITHUB_TOKEN }}
+
+      - name: 💾 Commit e Push
+        run: |
+          git config user.name "RafaelaSommer"
+          git config user.email "camilaerafaelagoncalves@hotmail.com"
+
+          git pull origin main --rebase
+
+          git diff --quiet && echo "Sem mudanças" || (
+            git add .
+            git commit -m "🤖 auto update"
+            git push origin main
+          )
 `;
 
 const workflowDir = path.join(ROOT, ".github", "workflows");
