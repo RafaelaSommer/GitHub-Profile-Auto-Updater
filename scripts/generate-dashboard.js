@@ -1,5 +1,6 @@
 const fs = require("fs");
 const path = require("path");
+console.log("🔥 NOVA VERSÃO DO DASHBOARD");
 
 const COLORS = [
   "#FF6B6B","#6BCB77","#4D96FF","#FFD93D",
