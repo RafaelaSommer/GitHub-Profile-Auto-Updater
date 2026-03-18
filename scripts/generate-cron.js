@@ -31,7 +31,7 @@ if (interval < 5) {
 }
 
 const workflow = `
-name: Update README
+name: 🤖 Update README
 
 on:
   schedule:
@@ -55,19 +55,17 @@ jobs:
           node-version: 20
 
       - name: Install deps
-        run: npm install axios luxon
+        run: npm install axios luxon dotenv
 
-      - name: Update dashboard and README
-        run: |
-          node scripts/index.js
-          node scripts/update_readme.js
+      - name: Run updater
+        run: node scripts/index.js
         env:
           GITHUB_TOKEN: \${{ secrets.GITHUB_TOKEN }}
 
       - name: Commit and push
         run: |
-          git config user.name "RafaelaSommer"
-          git config user.email "camilaerafaelagoncalves@hotmail.com"
+          git config user.name "${SETTINGS.gitUser || "RafaelaSommer"}"
+          git config user.email "${SETTINGS.gitEmail || "camilaerafaelagoncalves@hotmail.com"}"
 
           git pull origin main --rebase
 
@@ -75,7 +73,7 @@ jobs:
             echo "No changes"
           else
             git add .
-            git commit -m "auto update"
+            git commit -m "🤖 auto update"
             git push origin main
           fi
 `;

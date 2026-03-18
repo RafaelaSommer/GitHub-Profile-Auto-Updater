@@ -6,9 +6,6 @@ const fs = require("fs")
 const path = require("path")
 const axios = require("axios")
 const { DateTime } = require("luxon")
-const { execSync } = require("child_process")
-const generateDashboard = require("./generate-dashboard")
-const { readCache, writeCache } = require("./cache")
 
 const ROOT = path.join(__dirname,"..")
 
@@ -27,45 +24,6 @@ if(!TOKEN){
   process.exit(1)
 }
 
-function configureGit(){
-
-  try{
-
-    execSync(`git config user.name "${SETTINGS.gitUser}"`,{cwd:ROOT})
-    execSync(`git config user.email "${SETTINGS.gitEmail}"`,{cwd:ROOT})
-
-    const repo =
-      `https://${TOKEN}@github.com/${USER}/GitHub-Profile-Auto-Updater.git`
-
-    execSync(`git remote set-url origin ${repo}`,{cwd:ROOT})
-
-  }catch(e){
-    console.log("git já configurado")
-  }
-
-}
-
-function checkInterval(){
-
-  const cache = readCache()
-
-  const last = cache.lastUpdate || 0
-  const now = Date.now()
-
-  const diff = now - last
-
-  if(diff < INTERVAL * 60000){
-
-    console.log("⏳ Intervalo mínimo ainda não atingido")
-    process.exit(0)
-
-  }
-
-  cache.lastUpdate = now
-  writeCache(cache)
-
-}
-
 async function fetchGitHub(){
 
   const query = `
@@ -74,9 +32,7 @@ async function fetchGitHub(){
       followers { totalCount }
       repositories(first:100) {
         nodes {
-          name
           stargazerCount
-          primaryLanguage { name }
         }
       }
     }
@@ -96,116 +52,59 @@ async function fetchGitHub(){
 
 }
 
-function commit(){
-
-  try{
-
-    execSync("git add .",{cwd:ROOT})
-
-    const status =
-      execSync("git status --porcelain",{cwd:ROOT}).toString()
-
-    if(!status){
-      console.log("📭 Nenhuma mudança")
-      return
-    }
-
-    const msg =
-      `🤖 Auto Update ${DateTime.now().toFormat("HH:mm:ss")}`
-
-    execSync(
-      `git commit -m "${msg}"`,
-      {cwd:ROOT,stdio:"inherit"}
-    )
-
-    execSync(
-      "git push origin HEAD",
-      {cwd:ROOT,stdio:"inherit"}
-    )
-
-    console.log("🚀 Push realizado")
-
-  }catch(e){
-
-    console.error("erro git:",e.message)
-
-  }
-
-}
-
 function updateReadme(dynamicContent){
 
-  const template =
-    fs.readFileSync(
-      path.join(ROOT,"templates/README.template.md"),
-      "utf8"
-    )
+  const readmePath = path.join(ROOT,"README.md")
 
-  const start =
-    "<!--START_SECTION:dynamic-->"
+  let content = fs.readFileSync(readmePath,"utf8")
 
-  const end =
-    "<!--END_SECTION:dynamic-->"
+  const start = "<!--START_SECTION:dynamic-->"
+  const end = "<!--END_SECTION:dynamic-->"
 
-  const newBlock =
-`${start}
+  const regex = new RegExp(`${start}[\\s\\S]*${end}`)
+
+  const newBlock = `${start}
 ${dynamicContent}
 ${end}`
 
-  const updated =
-    template.replace(
-      new RegExp(`${start}[\\s\\S]*${end}`),
-      newBlock
-    )
+  if(!regex.test(content)){
+    console.log("⚠️ Bloco dinâmico não encontrado no README")
+    process.exit(1)
+  }
 
-  fs.writeFileSync(
-    path.join(ROOT,"README.md"),
-    updated
-  )
+  const updated = content.replace(regex,newBlock)
+
+  fs.writeFileSync(readmePath,updated)
 
 }
 
 async function main(){
 
-  configureGit()
+  const now = DateTime.now().setZone(TIMEZONE)
+  const next = now.plus({ minutes: INTERVAL })
 
-  checkInterval()
+  const user = await fetchGitHub()
 
-  const now =
-    DateTime.now().setZone(TIMEZONE)
+  const repos = user.repositories.nodes
 
-  const user =
-    await fetchGitHub()
-
-  const repos =
-    user.repositories.nodes
-
-  const followers =
-    user.followers.totalCount
-
-  const stars =
-    repos.reduce((a,r)=>a+r.stargazerCount,0)
-
-  generateDashboard({
-    followers,
-    totalProjects: repos.length,
-    stars
-  })
+  const followers = user.followers.totalCount
+  const stars = repos.reduce((a,r)=>a+r.stargazerCount,0)
 
   const dynamicContent = `
-📊 **Followers:** ${followers}
-
-📦 **Projetos:** ${repos.length}
-
-⭐ **Stars:** ${stars}
+## 🔄 Atualização Automática
 
 🕒 Última atualização:  
-${now.toFormat("dd/MM/yyyy HH:mm:ss")}
+${now.toFormat("dd/MM/yyyy HH:mm:ss")} (Horário de Brasília)
+
+🔁 Próxima atualização automática:  
+${next.toFormat("dd/MM/yyyy HH:mm:ss")} (Horário de Brasília)
+
+📊 **Followers:** ${followers}  
+📦 **Projetos:** ${repos.length}  
+⭐ **Stars:** ${stars}
 `
 
   updateReadme(dynamicContent)
-
-  commit()
 
 }
 

@@ -103,7 +103,7 @@ Workflows que executam os scripts automaticamente.
 
 ---
 
-## 📊 Dashboard
+### 📊 Dashboard
 
 <p align="center">
   <img src="./assets/dashboard.svg" />
@@ -116,10 +116,10 @@ Workflows que executam os scripts automaticamente.
 ## 🔄 Atualização Automática
 
 🕒 Última atualização:  
-{last_update} (Horário de Brasília)
+Carregando...
 
 🔁 Próxima atualização automática:  
-{next_update} (Horário de Brasília)
+Carregando...
 
 <!--END_SECTION:dynamic-->
 

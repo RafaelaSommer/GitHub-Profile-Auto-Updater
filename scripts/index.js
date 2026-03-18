@@ -1,5 +1,5 @@
 const axios = require("axios");
-const generateDashboard = require("./generateDashboard");
+const generateDashboard = require("./generate-dashboard")
 
 const USERNAME = "RafaelaSommer";
 
