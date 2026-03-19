@@ -67,13 +67,13 @@ jobs:
           git config user.name "${SETTINGS.gitUser || "RafaelaSommer"}"
           git config user.email "${SETTINGS.gitEmail || "camilaerafaelagoncalves@hotmail.com"}"
 
-          git pull origin main --rebase
+          git add .
 
-          if git diff --quiet; then
+          if git diff --cached --quiet; then
             echo "No changes"
           else
-            git add .
             git commit -m "🤖 auto update"
+            git pull --rebase --autostash origin main
             git push origin main
           fi
 `;
