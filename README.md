@@ -103,25 +103,25 @@ Workflows que executam os scripts automaticamente.
 
 ---
 
-## 📊 Dashboard
+### 📊 Dashboard
 
-![Dashboard](./assets/dashboard.svg)
+<p align="center">
+  <img src="./assets/dashboard.svg" />
+</p>
 
 ---
 
 <!--START_SECTION:dynamic-->
 
-## 🔄 Atualização Automática
+⭐ **Total de Estrelas:** 7
 
-🕒 Última atualização:  
-18/03/2026 16:12:18 (Horário de Brasília)
+👥 **Seguidores:** 346
 
-🔁 Próxima atualização automática:  
-18/03/2026 16:17:18 (Horário de Brasília)
+🕒 **Última atualização:**  
+20/03/2026 15:20:27
 
-📊 **Followers:** 344  
-📦 **Projetos:** 9  
-⭐ **Stars:** 7
+⏭ **Próxima atualização:**  
+20/03/2026 15:25:27
 
 <!--END_SECTION:dynamic-->
 

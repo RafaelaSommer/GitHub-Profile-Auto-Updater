@@ -1,115 +1,173 @@
 #!/usr/bin/env node
+require("dotenv").config();
 
-require("dotenv").config()
+const fs = require("fs");
+const path = require("path");
+const axios = require("axios");
+const { DateTime } = require("luxon");
+const { execSync } = require("child_process");
+const generateDashboard = require("./generate-dashboard");
 
-const fs = require("fs")
-const path = require("path")
-const axios = require("axios")
-const { DateTime } = require("luxon")
-const generateDashboard = require("./generate-dashboard")
-
-const ROOT = path.join(__dirname,"..")
-
+const ROOT = path.join(__dirname, "..");
 const SETTINGS = JSON.parse(
-  fs.readFileSync(path.join(ROOT,".github/settings.json"),"utf8")
-)
+  fs.readFileSync(path.join(ROOT, ".github/settings.json"), "utf8")
+);
 
-const USER = SETTINGS.github_user
-const TIMEZONE = SETTINGS.timezone
-const INTERVAL = SETTINGS.interval_minutes
+const USER = SETTINGS.github_user;
+const TIMEZONE = SETTINGS.timezone;
+const TOKEN = process.env.GITHUB_TOKEN;
 
-const TOKEN = process.env.GITHUB_TOKEN
-
-if(!TOKEN){
-  console.error("❌ GITHUB_TOKEN não encontrado")
-  process.exit(1)
+if (!TOKEN) {
+  console.error("❌ GITHUB_TOKEN não encontrado");
+  process.exit(1);
 }
 
-async function fetchGitHub(){
+// 🔧 Configura git
+function configureGit() {
+  try {
+    execSync(`git config user.name "${SETTINGS.gitUser}"`, { cwd: ROOT });
+    execSync(`git config user.email "${SETTINGS.gitEmail}"`, { cwd: ROOT });
 
-  const resUser = await axios.get(
-    `https://api.github.com/users/${USER}`,
-    { headers:{ Authorization:`Bearer ${TOKEN}` } }
-  )
-
-  const resRepos = await axios.get(
-    `https://api.github.com/users/${USER}/repos?per_page=100`,
-    { headers:{ Authorization:`Bearer ${TOKEN}` } }
-  )
-
-  const repos = resRepos.data
-
-  const languages = {}
-
-  repos.forEach(repo=>{
-    if(repo.language){
-      languages[repo.language] =
-        (languages[repo.language] || 0) + 1
-    }
-  })
-
-  return {
-    followers: resUser.data.followers,
-    totalProjects: repos.length,
-    stars: repos.reduce((a,r)=>a+r.stargazers_count,0),
-    languages,
-    repos: repos.map(r=>({
-      name: r.name,
-      stars: r.stargazers_count,
-      language: r.language
-    }))
+    const repo = `https://${TOKEN}@github.com/${USER}/${USER}.git`;
+    execSync(`git remote set-url origin ${repo}`, { cwd: ROOT });
+  } catch {
+    console.log("git já configurado");
   }
 }
 
-function updateReadme(dynamicContent){
+// 🌐 Busca dados do GitHub
+async function fetchGitHub() {
+  const query = `
+    query {
+      user(login:"${USER}") {
+        followers {
+          totalCount
+        }
+        repositories(first:100) {
+          nodes {
+            name
+            stargazerCount
+            primaryLanguage { name }
+          }
+        }
+      }
+    }
+  `;
 
-  const readmePath = path.join(ROOT,"README.md")
+  const res = await axios.post(
+    "https://api.github.com/graphql",
+    { query },
+    { headers: { Authorization: `Bearer ${TOKEN}` } }
+  );
 
-  let content = fs.readFileSync(readmePath,"utf8")
-
-  const start = "<!--START_SECTION:dynamic-->"
-  const end = "<!--END_SECTION:dynamic-->"
-
-  const regex = new RegExp(`${start}[\\s\\S]*${end}`)
-
-  const newBlock = `${start}
-${dynamicContent}
-${end}`
-
-  const updated = content.replace(regex,newBlock)
-
-  fs.writeFileSync(readmePath,updated)
-
+  return res.data.data.user;
 }
 
-async function main(){
+// 💾 Commit + push FORÇADO
+function commit() {
+  try {
+    execSync("git add .", { cwd: ROOT });
 
-  const now = DateTime.now().setZone(TIMEZONE)
-  const next = now.plus({ minutes: INTERVAL })
+    const status = execSync("git status --porcelain", { cwd: ROOT }).toString();
 
-  const data = await fetchGitHub()
+    if (!status.trim()) {
+      console.log("ℹ️ Nada mudou.");
+      return false;
+    }
 
-  // ✅ GERA DASHBOARD
-  generateDashboard(data)
+    const now = DateTime.now().setZone(TIMEZONE);
+    const msg = `🤖 README atualizado ${now.toFormat("HH:mm:ss")}`;
+
+    execSync(`git commit -m "${msg}"`, { cwd: ROOT, stdio: "inherit" });
+
+    // 🔥 PUSH SEM ERRO (FORCE + RETRY)
+    try {
+      execSync("git push origin HEAD --force", { cwd: ROOT, stdio: "inherit" });
+    } catch {
+      console.log("⚠️ Falha no push, tentando novamente...");
+      execSync("git push origin HEAD --force", { cwd: ROOT, stdio: "inherit" });
+    }
+
+    return true;
+
+  } catch (e) {
+    console.error("❌ erro git:", e.message);
+    return false;
+  }
+}
+
+// 📝 Atualiza README
+function updateReadme(stars, followers) {
+
+  const templatePath = path.join(ROOT, "templates/README.template.md");
+  const template = fs.readFileSync(templatePath, "utf8");
+
+  const start = "<!--START_SECTION:dynamic-->";
+  const end = "<!--END_SECTION:dynamic-->";
+
+  const now = DateTime.now().setZone(TIMEZONE);
+  const nextUpdate = now.plus({ minutes: SETTINGS.interval_minutes });
 
   const dynamicContent = `
-## 🔄 Atualização Automática
+⭐ **Total de Estrelas:** ${stars}
 
-🕒 Última atualização:  
-${now.toFormat("dd/MM/yyyy HH:mm:ss")} (Horário de Brasília)
+👥 **Seguidores:** ${followers}
 
-🔁 Próxima atualização automática:  
-${next.toFormat("dd/MM/yyyy HH:mm:ss")} (Horário de Brasília)
+🕒 **Última atualização:**  
+${now.toFormat("dd/MM/yyyy HH:mm:ss")}
 
-📊 **Followers:** ${data.followers}  
-📦 **Projetos:** ${data.totalProjects}  
-⭐ **Stars:** ${data.stars}
-`
+⏭ **Próxima atualização:**  
+${nextUpdate.toFormat("dd/MM/yyyy HH:mm:ss")}
+`;
 
-  updateReadme(dynamicContent)
+  const newBlock = `${start}\n${dynamicContent}\n${end}`;
 
-  console.log("✅ README atualizado")
+  const updated = template.replace(
+    new RegExp(`${start}[\\s\\S]*${end}`),
+    newBlock
+  );
 
+  fs.writeFileSync(path.join(ROOT, "README.md"), updated);
 }
 
-main()
+// 🚀 MAIN
+async function main() {
+
+  configureGit();
+
+  const user = await fetchGitHub();
+
+  const repos = user.repositories.nodes;
+  const followers = user.followers.totalCount;
+
+  const stars = repos.reduce((a, r) => a + r.stargazerCount, 0);
+
+  const languages = {};
+
+  repos.forEach(r => {
+    const lang = r.primaryLanguage?.name;
+    if (!lang) return;
+    if (!languages[lang]) languages[lang] = 0;
+    languages[lang]++;
+  });
+
+  generateDashboard({
+    stars,
+    followers,
+    totalProjects: repos.length,
+    languages,
+    repos
+  });
+
+  updateReadme(stars, followers);
+
+  const didCommit = commit();
+
+  if (didCommit) {
+    console.log("✅ Atualizado com sucesso!");
+  } else {
+    console.log("ℹ️ Nenhuma alteração.");
+  }
+}
+
+main();

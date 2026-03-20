@@ -38,6 +38,11 @@ on:
     - cron: "*/${interval} * * * *"
   workflow_dispatch:
 
+# 🚀 evita conflito entre execuções simultâneas
+concurrency:
+  group: update-readme
+  cancel-in-progress: true
+
 permissions:
   contents: write
 
@@ -73,8 +78,7 @@ jobs:
             echo "No changes"
           else
             git commit -m "🤖 auto update"
-            git pull --rebase --autostash origin main
-            git push origin main
+            git push origin main --force
           fi
 `;
 

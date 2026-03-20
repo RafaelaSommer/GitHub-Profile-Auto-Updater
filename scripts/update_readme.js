@@ -26,29 +26,45 @@ if(!TOKEN){
 
 async function fetchGitHub(){
 
-  const query = `
-  query {
-    user(login:"${USER}") {
-      followers { totalCount }
-      repositories(first:100) {
-        nodes {
-          stargazerCount
+  try{
+
+    const res = await axios.post(
+      "https://api.github.com/graphql",
+      {
+        query: `
+        query {
+          user(login:"${USER}") {
+            followers { totalCount }
+            repositories(first:100) {
+              nodes {
+                stargazerCount
+              }
+            }
+          }
+        }`
+      },
+      {
+        headers:{
+          Authorization:`Bearer ${TOKEN}`
         }
       }
-    }
-  }`
+    )
 
-  const res = await axios.post(
-    "https://api.github.com/graphql",
-    {query},
-    {
-      headers:{
-        Authorization:`Bearer ${TOKEN}`
-      }
-    }
-  )
+    return res.data.data.user
 
-  return res.data.data.user
+  }catch(err){
+
+    console.error("❌ Erro ao buscar dados do GitHub")
+
+    if(err.response){
+      console.error("Status:",err.response.status)
+      console.error("Resposta:",err.response.data)
+    }else{
+      console.error(err.message)
+    }
+
+    process.exit(1)
+  }
 
 }
 
@@ -61,21 +77,25 @@ function updateReadme(dynamicContent){
   const start = "<!--START_SECTION:dynamic-->"
   const end = "<!--END_SECTION:dynamic-->"
 
-  const regex = new RegExp(`${start}[\\s\\S]*${end}`)
+  const regex = /<!--START_SECTION:dynamic-->[\s\S]*<!--END_SECTION:dynamic-->/
 
   const newBlock = `${start}
-${dynamicContent}
+${dynamicContent.trim()}
 ${end}`
 
   if(!regex.test(content)){
-    console.log("⚠️ Bloco dinâmico não encontrado no README")
+    console.error("❌ Bloco dinâmico NÃO encontrado no README")
+    console.error("👉 Verifique se existe exatamente:")
+    console.error(start)
+    console.error(end)
     process.exit(1)
   }
 
   const updated = content.replace(regex,newBlock)
 
-  fs.writeFileSync(readmePath,updated)
+  fs.writeFileSync(readmePath,updated,"utf8")
 
+  console.log("✅ README atualizado com sucesso")
 }
 
 async function main(){
