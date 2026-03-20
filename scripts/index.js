@@ -22,13 +22,15 @@ if (!TOKEN) {
   process.exit(1);
 }
 
-// 🔧 Configura git
+// 🔧 Configura git (AGORA COM REPO CORRETO)
 function configureGit() {
   try {
     execSync(`git config user.name "${SETTINGS.gitUser}"`, { cwd: ROOT });
     execSync(`git config user.email "${SETTINGS.gitEmail}"`, { cwd: ROOT });
 
-    const repo = `https://${TOKEN}@github.com/${USER}/${USER}.git`;
+    // 🔥 ALTERADO AQUI
+    const repo = `https://${TOKEN}@github.com/${USER}/GitHub-Profile-Auto-Updater.git`;
+
     execSync(`git remote set-url origin ${repo}`, { cwd: ROOT });
   } catch {
     console.log("git já configurado");
@@ -80,7 +82,6 @@ function commit() {
 
     execSync(`git commit -m "${msg}"`, { cwd: ROOT, stdio: "inherit" });
 
-    // 🔥 PUSH SEM ERRO (FORCE + RETRY)
     try {
       execSync("git push origin HEAD --force", { cwd: ROOT, stdio: "inherit" });
     } catch {
