@@ -150,9 +150,52 @@ Ideal para:
 
 ## 👩‍💻 Autora  
 
-[![LinkedIn](https://img.shields.io/badge/LinkedIn-Rafaela%20Sommer-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/rafaelasommergon%C3%A7alves16/)
-[![GitHub](https://img.shields.io/badge/GitHub-RafaelaSommer-181717?style=for-the-badge&logo=github)](https://github.com/RafaelaSommer)
-[![WhatsApp](https://img.shields.io/badge/WhatsApp-Entre%20em%20contato-25D366?style=for-the-badge&logo=whatsapp&logoColor=white)](https://wa.me/5519971015465)
+<p align="center">
+
+<style>
+@keyframes float {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-6px); }
+  100% { transform: translateY(0px); }
+}
+
+@keyframes pulse {
+  0% { box-shadow: 0 0 5px rgba(0,0,0,0); }
+  50% { box-shadow: 0 0 20px currentColor; }
+  100% { box-shadow: 0 0 5px rgba(0,0,0,0); }
+}
+
+.badge {
+  border-radius: 12px;
+  animation: float 3s ease-in-out infinite, pulse 2.5s infinite;
+  transition: 0.3s;
+  margin: 6px;
+}
+
+.badge:hover {
+  transform: scale(1.15);
+}
+</style>
+
+<a href="https://www.linkedin.com/in/rafaelasommergon%C3%A7alves16/">
+<img class="badge"
+src="https://img.shields.io/badge/LinkedIn-Rafaela%20Sommer-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white"
+style="color:#0A66C2;">
+</a>
+
+<a href="https://github.com/RafaelaSommer">
+<img class="badge"
+src="https://img.shields.io/badge/GitHub-RafaelaSommer-181717?style=for-the-badge&logo=github&logoColor=white"
+style="color:#181717;">
+</a>
+
+<a href="https://wa.me/5519971015465">
+<img class="badge"
+src="https://img.shields.io/badge/WhatsApp-Entre%20em%20contato-25D366?style=for-the-badge&logo=whatsapp&logoColor=white"
+style="color:#25D366;">
+</a>
+
+</p>
 
 ---
 
