@@ -1,4 +1,4 @@
-name: 🤖 Update Profile
+name: ⚙️ Auto Updater Engine
 
 on:
   schedule:
@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
 
 concurrency:
-  group: profile-update
+  group: engine-update
   cancel-in-progress: true
 
 permissions:
@@ -20,11 +20,8 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout profile repo
+      - name: Checkout repo
         uses: actions/checkout@v5
-        with:
-          fetch-depth: 0
-          ref: main
 
       - name: Setup Node
         uses: actions/setup-node@v5
@@ -32,14 +29,12 @@ jobs:
           node-version: 22
 
       - name: Install deps
-        run: npm install axios luxon dotenv
+        run: npm install
 
-      - name: Run updater
-        run: node scripts/index.js
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Run engine
+        run: node src/index.js
 
-      - name: Commit and push
+      - name: Commit changes
         run: |
           git config user.name "RafaelaSommer"
           git config user.email "camilaerafaelagoncalves@hotmail.com"
@@ -49,6 +44,6 @@ jobs:
           if git diff --cached --quiet; then
             echo "No changes"
           else
-            git commit -m "🤖 profile auto update"
-            git push origin main --force
+            git commit -m "⚙️ auto update engine"
+            git push
           fi
