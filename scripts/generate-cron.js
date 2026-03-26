@@ -40,7 +40,7 @@ function detectType() {
     return "profile";
   }
 
-  if (fs.existsSync(path.join(ROOT, "src", "index.js"))) {
+  if (fs.existsSync(path.join(ROOT, "scripts", "index.js"))) {
     return "engine";
   }
 
