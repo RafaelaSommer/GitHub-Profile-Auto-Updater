@@ -34,23 +34,27 @@ if (fs.existsSync(SETTINGS_PATH)) {
 // 🔍 DETECT REPO TYPE
 // =====================
 function detectType() {
+  // prioridade: config manual
   if (SETTINGS.type) return SETTINGS.type;
 
-  if (fs.existsSync(path.join(ROOT, "scripts", "index.js"))) {
+  const hasProfile = fs.existsSync(path.join(ROOT, "scripts", "index.js"));
+  const hasEngine = fs.existsSync(path.join(ROOT, "src", "index.js"));
+
+  if (hasProfile && !hasEngine) return "profile";
+  if (hasEngine && !hasProfile) return "engine";
+
+  if (hasProfile && hasEngine) {
+    console.warn("⚠️ Ambos detectados. Usando 'profile' por padrão.");
     return "profile";
   }
 
-  if (fs.existsSync(path.join(ROOT, "scripts", "index.js"))) {
-    return "engine";
-  }
-
-  // fallback: nome da pasta
+  // fallback pelo nome
   const repoName = path.basename(ROOT).toLowerCase();
 
   if (repoName.includes("profile")) return "profile";
   if (repoName.includes("updater")) return "engine";
 
-  console.warn("⚠️ Não foi possível detectar o tipo. Usando 'profile' por padrão.");
+  console.warn("⚠️ Não foi possível detectar o tipo. Usando 'profile'.");
   return "profile";
 }
 
@@ -64,6 +68,19 @@ let interval = Number(SETTINGS.interval_minutes) || 20;
 if (interval < 5) {
   console.warn("⚠️ Intervalo menor que 5 minutos. Ajustado para 5.");
   interval = 5;
+}
+
+// =====================
+// 🛑 VALIDATION
+// =====================
+if (TYPE === "engine" && !fs.existsSync(path.join(ROOT, "src", "index.js"))) {
+  console.error("❌ ERRO: src/index.js não encontrado para engine.");
+  process.exit(1);
+}
+
+if (TYPE === "profile" && !fs.existsSync(path.join(ROOT, "scripts", "index.js"))) {
+  console.error("❌ ERRO: scripts/index.js não encontrado para profile.");
+  process.exit(1);
 }
 
 // =====================
