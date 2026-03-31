@@ -31,7 +31,6 @@ function generateDashboard(data) {
     .sort((a,b)=>b[1]-a[1])
     .slice(0,6);
 
-  // 📊 Linguagens
   sortedLang.forEach(([lang,val])=>{
 
     const percent =
@@ -60,21 +59,11 @@ function generateDashboard(data) {
   let repoList = "";
   let repoY = reposTitleY + 30;
 
-  // 📦 Repositórios
   repos
     .sort((a,b)=>(b.stargazerCount || 0) - (a.stargazerCount || 0))
     .forEach(r=>{
 
-      // 🔥 CORREÇÃO PRINCIPAL (compatibilidade total)
-      const repoLang =
-        r.language ||
-        r.primaryLanguage?.name ||
-        "—";
-
-      const repoStars =
-        r.stars ??
-        r.stargazerCount ??
-        0;
+      const repoLang = r.primaryLanguage?.name || "—";
 
       repoList += `
         <text x="${cardPadding}" y="${repoY}" fill="#58A6FF" font-size="14">
@@ -82,7 +71,7 @@ function generateDashboard(data) {
         </text>
 
         <text x="${cardPadding + 350}" y="${repoY}" fill="#FFD93D" font-size="14">
-          ⭐ ${repoStars}
+          ⭐ ${r.stargazerCount}
         </text>
 
         <text x="${cardPadding + 450}" y="${repoY}" fill="#8B949E" font-size="12">

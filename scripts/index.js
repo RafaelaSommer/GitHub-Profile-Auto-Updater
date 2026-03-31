@@ -22,13 +22,12 @@ if (!TOKEN) {
   process.exit(1);
 }
 
-// 🔧 Configura git (AGORA COM REPO CORRETO)
+// 🔧 Configura git
 function configureGit() {
   try {
     execSync(`git config user.name "${SETTINGS.gitUser}"`, { cwd: ROOT });
     execSync(`git config user.email "${SETTINGS.gitEmail}"`, { cwd: ROOT });
 
-    // 🔥 ALTERADO AQUI
     const repo = `https://${TOKEN}@github.com/${USER}/GitHub-Profile-Auto-Updater.git`;
 
     execSync(`git remote set-url origin ${repo}`, { cwd: ROOT });
@@ -37,7 +36,7 @@ function configureGit() {
   }
 }
 
-// 🌐 Busca dados do GitHub
+// 🌐 QUERY MELHORADA
 async function fetchGitHub() {
   const query = `
     query {
@@ -49,7 +48,16 @@ async function fetchGitHub() {
           nodes {
             name
             stargazerCount
-            primaryLanguage { name }
+
+            primaryLanguage {
+              name
+            }
+
+            languages(first:1, orderBy:{field:SIZE, direction:DESC}) {
+              nodes {
+                name
+              }
+            }
           }
         }
       }
@@ -65,7 +73,7 @@ async function fetchGitHub() {
   return res.data.data.user;
 }
 
-// 💾 Commit + push FORÇADO
+// 💾 Commit + push
 function commit() {
   try {
     execSync("git add .", { cwd: ROOT });
@@ -82,12 +90,7 @@ function commit() {
 
     execSync(`git commit -m "${msg}"`, { cwd: ROOT, stdio: "inherit" });
 
-    try {
-      execSync("git push origin HEAD --force", { cwd: ROOT, stdio: "inherit" });
-    } catch {
-      console.log("⚠️ Falha no push, tentando novamente...");
-      execSync("git push origin HEAD --force", { cwd: ROOT, stdio: "inherit" });
-    }
+    execSync("git push origin HEAD --force", { cwd: ROOT, stdio: "inherit" });
 
     return true;
 
@@ -97,7 +100,7 @@ function commit() {
   }
 }
 
-// 📝 Atualiza README
+// 📝 README
 function updateReadme(stars, followers) {
 
   const templatePath = path.join(ROOT, "templates/README.template.md");
@@ -138,16 +141,36 @@ async function main() {
 
   const user = await fetchGitHub();
 
-  const repos = user.repositories.nodes;
+  const rawRepos = user.repositories.nodes;
+
+  // 🔥 NORMALIZAÇÃO (ESSENCIAL)
+  const repos = rawRepos.map(r => {
+
+    const lang =
+      r.primaryLanguage?.name ||
+      r.languages?.nodes?.[0]?.name ||
+      "—";
+
+    return {
+      name: r.name,
+      stargazerCount: r.stargazerCount,
+      primaryLanguage: { name: lang }
+    };
+
+  });
+
   const followers = user.followers.totalCount;
 
   const stars = repos.reduce((a, r) => a + r.stargazerCount, 0);
 
+  // 📊 CONTAGEM DE LINGUAGENS
   const languages = {};
 
   repos.forEach(r => {
     const lang = r.primaryLanguage?.name;
-    if (!lang) return;
+
+    if (!lang || lang === "—") return;
+
     if (!languages[lang]) languages[lang] = 0;
     languages[lang]++;
   });
