@@ -1,4 +1,4 @@
-name: 🔥 Profile Auto Update
+name: 🤖 Update Profile
 
 on:
   schedule:
@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
 
 concurrency:
-  group: profile-auto
+  group: profile-update
   cancel-in-progress: true
 
 permissions:
@@ -18,39 +18,32 @@ jobs:
     timeout-minutes: 5
 
     steps:
-      - name: 📥 Checkout
+      - name: Checkout
         uses: actions/checkout@v5
         with:
           fetch-depth: 0
 
-      - name: ⚙️ Setup Node
+      - name: Setup Node
         uses: actions/setup-node@v5
         with:
           node-version: 22
           cache: "npm"
 
-      - name: 📦 Install deps
+      - name: Install deps
         run: npm install
 
-      - name: 🚀 Run updater
-        run: |
-          echo "Iniciando bot..."
-          node scripts/index.js || echo "⚠️ Script falhou mas workflow continua"
-
+      - name: Run updater
+        run: node scripts/index.js
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: 🧠 Force change (timestamp)
-        run: |
-          echo $(date) > .last-update
-
-      - name: 💾 Commit & Push
+      - name: Commit and push
         run: |
           git config user.name "RafaelaSommer"
           git config user.email "camilaerafaelagoncalves@hotmail.com"
 
           git add .
 
-          git commit --allow-empty -m "🔥 profile update $(date +'%d/%m %H:%M:%S')"
+          git commit --allow-empty -m "🤖 auto update $(date +'%d/%m %H:%M:%S')"
 
           git push

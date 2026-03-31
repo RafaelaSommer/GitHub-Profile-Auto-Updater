@@ -6,13 +6,19 @@ const path = require("path");
 const ROOT = process.cwd();
 const SETTINGS_PATH = path.join(ROOT, ".github", "settings.json");
 
+// =====================
+// 🔧 DEFAULT SETTINGS
+// =====================
 let SETTINGS = {
   gitUser: "RafaelaSommer",
   gitEmail: "camilaerafaelagoncalves@hotmail.com",
-  interval_minutes: 20
+  interval_minutes: 20,
+  type: null // "profile" | "engine"
 };
 
-// LOAD SETTINGS
+// =====================
+// 📥 LOAD SETTINGS
+// =====================
 if (fs.existsSync(SETTINGS_PATH)) {
   try {
     SETTINGS = {
@@ -20,18 +26,62 @@ if (fs.existsSync(SETTINGS_PATH)) {
       ...JSON.parse(fs.readFileSync(SETTINGS_PATH, "utf-8"))
     };
   } catch {
-    console.warn("⚠️ settings.json inválido");
+    console.warn("⚠️ Erro ao ler settings.json, usando padrão.");
   }
 }
 
-// INTERVAL
-let interval = Number(SETTINGS.interval_minutes) || 20;
-if (interval < 5) interval = 5;
+// =====================
+// 🔍 DETECT REPO TYPE
+// =====================
+function detectType() {
+  if (SETTINGS.type) return SETTINGS.type;
 
-// WORKFLOW PROFILE PRO
+  const hasProfile = fs.existsSync(path.join(ROOT, "scripts", "index.js"));
+  const hasEngine = fs.existsSync(path.join(ROOT, "src", "index.js"));
+
+  if (hasProfile && !hasEngine) return "profile";
+  if (hasEngine && !hasProfile) return "engine";
+
+  if (hasProfile && hasEngine) {
+    console.warn("⚠️ Ambos detectados. Usando 'profile'.");
+    return "profile";
+  }
+
+  const repoName = path.basename(ROOT).toLowerCase();
+
+  if (repoName.includes("profile")) return "profile";
+  if (repoName.includes("updater")) return "profile";
+
+  console.warn("⚠️ Não foi possível detectar. Usando 'profile'.");
+  return "profile";
+}
+
+const TYPE = detectType();
+
+// =====================
+// ⏱ INTERVAL
+// =====================
+let interval = Number(SETTINGS.interval_minutes) || 20;
+
+if (interval < 5) {
+  console.warn("⚠️ Intervalo menor que 5. Ajustado para 5.");
+  interval = 5;
+}
+
+// =====================
+// 🛑 VALIDATION
+// =====================
+if (TYPE === "profile" && !fs.existsSync(path.join(ROOT, "scripts", "index.js"))) {
+  console.error("❌ scripts/index.js não encontrado.");
+  process.exit(1);
+}
+
+// =====================
+// 🧠 WORKFLOW
+// =====================
 function createWorkflow() {
   return `
-name: 🔥 Profile Auto Update
+name: 🤖 Update Profile
 
 on:
   schedule:
@@ -39,7 +89,7 @@ on:
   workflow_dispatch:
 
 concurrency:
-  group: profile-auto
+  group: profile-update
   cancel-in-progress: true
 
 permissions:
@@ -51,47 +101,43 @@ jobs:
     timeout-minutes: 5
 
     steps:
-      - name: 📥 Checkout
+      - name: Checkout
         uses: actions/checkout@v5
         with:
           fetch-depth: 0
 
-      - name: ⚙️ Setup Node
+      - name: Setup Node
         uses: actions/setup-node@v5
         with:
           node-version: 22
           cache: "npm"
 
-      - name: 📦 Install deps
+      - name: Install deps
         run: npm install
 
-      - name: 🚀 Run updater
-        run: |
-          echo "Iniciando bot..."
-          node scripts/index.js || echo "⚠️ Script falhou mas workflow continua"
-
+      - name: Run updater
+        run: node scripts/index.js
         env:
           GITHUB_TOKEN: \${{ secrets.GITHUB_TOKEN }}
 
-      - name: 🧠 Force change (timestamp)
-        run: |
-          echo $(date) > .last-update
-
-      - name: 💾 Commit & Push
+      - name: Commit and push
         run: |
           git config user.name "${SETTINGS.gitUser}"
           git config user.email "${SETTINGS.gitEmail}"
 
           git add .
 
-          git commit --allow-empty -m "🔥 profile update $(date +'%d/%m %H:%M:%S')"
+          git commit --allow-empty -m "🤖 auto update $(date +'%d/%m %H:%M:%S')"
 
           git push
 `;
 }
 
-// WRITE
+// =====================
+// 📁 WRITE FILE
+// =====================
 const workflowDir = path.join(ROOT, ".github", "workflows");
+
 fs.mkdirSync(workflowDir, { recursive: true });
 
 fs.writeFileSync(
@@ -99,5 +145,9 @@ fs.writeFileSync(
   createWorkflow().trim() + "\n"
 );
 
-console.log("🔥 Workflow PRO criado!");
+// =====================
+// ✅ LOG
+// =====================
+console.log("✅ Workflow criado!");
+console.log(`📦 Tipo: ${TYPE}`);
 console.log(`⏱ Intervalo: ${interval} min`);
