@@ -6,7 +6,7 @@
     "end": 23
   },
   "interval_minutes": 5,
-  "type": "profile",
+  "type": "engine",
   "gitUser": "RafaelaSommer",
   "gitEmail": "camilaerafaelagoncalves@hotmail.com"
 }
