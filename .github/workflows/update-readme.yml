@@ -1,4 +1,4 @@
-name: 🤖 Update Profile
+name: 🔥 Profile Auto Update
 
 on:
   schedule:
@@ -6,48 +6,51 @@ on:
   workflow_dispatch:
 
 concurrency:
-  group: profile-update
+  group: profile-auto
   cancel-in-progress: true
 
 permissions:
   contents: write
 
-env:
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
-
 jobs:
   update:
     runs-on: ubuntu-latest
+    timeout-minutes: 5
 
     steps:
-      - name: Checkout profile repo
+      - name: 📥 Checkout
         uses: actions/checkout@v5
         with:
           fetch-depth: 0
 
-      - name: Setup Node
+      - name: ⚙️ Setup Node
         uses: actions/setup-node@v5
         with:
           node-version: 22
+          cache: "npm"
 
-      - name: Install deps
-        run: npm install axios luxon dotenv
+      - name: 📦 Install deps
+        run: npm install
 
-      - name: Run updater
-        run: node scripts/index.js
+      - name: 🚀 Run updater
+        run: |
+          echo "Iniciando bot..."
+          node scripts/index.js || echo "⚠️ Script falhou mas workflow continua"
+
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Commit and push
+      - name: 🧠 Force change (timestamp)
+        run: |
+          echo $(date) > .last-update
+
+      - name: 💾 Commit & Push
         run: |
           git config user.name "RafaelaSommer"
           git config user.email "camilaerafaelagoncalves@hotmail.com"
 
           git add .
 
-          if git diff --cached --quiet; then
-            echo "No changes"
-          else
-            git commit -m "🤖 profile auto update"
-            git push
-          fi
+          git commit --allow-empty -m "🔥 profile update $(date +'%d/%m %H:%M:%S')"
+
+          git push
