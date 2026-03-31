@@ -178,9 +178,9 @@
         </text>
 
         <text x="510" y="530"
-          fill="#8B949E"
+          fill="#3572A5"
           font-size="12">
-          —
+          Python
         </text>
       
         <text x="60" y="558"
@@ -198,7 +198,7 @@
         <text x="510" y="558"
           fill="#8B949E"
           font-size="12">
-          —
+          Jupyter Notebook
         </text>
       
         <text x="60" y="586"
@@ -214,9 +214,9 @@
         </text>
 
         <text x="510" y="586"
-          fill="#8B949E"
+          fill="#F7DF1E"
           font-size="12">
-          —
+          JavaScript
         </text>
       
         <text x="60" y="614"
@@ -232,9 +232,9 @@
         </text>
 
         <text x="510" y="614"
-          fill="#8B949E"
+          fill="#F7DF1E"
           font-size="12">
-          —
+          JavaScript
         </text>
       
         <text x="60" y="642"
@@ -252,7 +252,7 @@
         <text x="510" y="642"
           fill="#8B949E"
           font-size="12">
-          —
+          C#
         </text>
       
         <text x="60" y="670"
@@ -268,9 +268,9 @@
         </text>
 
         <text x="510" y="670"
-          fill="#8B949E"
+          fill="#F7DF1E"
           font-size="12">
-          —
+          JavaScript
         </text>
       
         <text x="60" y="698"
@@ -288,7 +288,7 @@
         <text x="510" y="698"
           fill="#8B949E"
           font-size="12">
-          —
+          C#
         </text>
       
         <text x="60" y="726"
@@ -306,7 +306,7 @@
         <text x="510" y="726"
           fill="#8B949E"
           font-size="12">
-          —
+          C#
         </text>
       
         <text x="60" y="754"
@@ -324,7 +324,7 @@
         <text x="510" y="754"
           fill="#8B949E"
           font-size="12">
-          —
+          TSQL
         </text>
       
 

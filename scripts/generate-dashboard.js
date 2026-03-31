@@ -1,11 +1,27 @@
 const fs = require("fs");
 const path = require("path");
+
 console.log("🔥 NOVA VERSÃO DO DASHBOARD");
 
 const COLORS = [
   "#FF6B6B","#6BCB77","#4D96FF","#FFD93D",
   "#845EC2","#FF9671","#00C9A7","#C34A36"
 ];
+
+// 🎨 Cores por linguagem
+const LANG_COLORS = {
+  JavaScript: "#F7DF1E",
+  TypeScript: "#3178C6",
+  Python: "#3572A5",
+  Java: "#B07219",
+  HTML: "#E34C26",
+  CSS: "#563D7C",
+  Shell: "#89E051",
+  C: "#555555",
+  "C++": "#F34B7D",
+  Go: "#00ADD8",
+  Rust: "#DEA584"
+};
 
 function generateDashboard(data){
 
@@ -31,6 +47,7 @@ function generateDashboard(data){
     .sort((a,b)=>b[1]-a[1])
     .slice(0,6);
 
+  // 📊 BARRAS DE LINGUAGEM
   sortedLang.forEach(([lang,val])=>{
 
     const percent = totalLang
@@ -75,15 +92,24 @@ function generateDashboard(data){
 
   let repoList = "";
 
+  // 📦 LISTA DE REPOSITÓRIOS
   repos
     .sort((a,b)=>{
-      const starsA = a.stars ?? a.stargazerCount ?? 0
-      const starsB = b.stars ?? b.stargazerCount ?? 0
-      return starsB - starsA
+      const starsA = a.stars ?? a.stargazerCount ?? 0;
+      const starsB = b.stars ?? b.stargazerCount ?? 0;
+      return starsB - starsA;
     })
     .forEach(repo=>{
 
-      const repoStars = repo.stars ?? repo.stargazerCount ?? 0
+      const repoStars = repo.stars ?? repo.stargazerCount ?? 0;
+
+      // ✅ CORREÇÃO AQUI
+      const repoLang =
+        repo.language ||
+        repo.primaryLanguage?.name ||
+        "—";
+
+      const langColor = LANG_COLORS[repoLang] || "#8B949E";
 
       repoList += `
         <text x="${cardPadding}" y="${y}"
@@ -99,9 +125,9 @@ function generateDashboard(data){
         </text>
 
         <text x="${cardPadding+450}" y="${y}"
-          fill="#8B949E"
+          fill="${langColor}"
           font-size="12">
-          ${repo.language || "—"}
+          ${repoLang}
         </text>
       `;
       y += 28;
