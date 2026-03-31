@@ -1,34 +1,17 @@
 const fs = require("fs");
 const path = require("path");
 
-console.log("🔥 NOVA VERSÃO DO DASHBOARD");
-
 const COLORS = [
   "#FF6B6B","#6BCB77","#4D96FF","#FFD93D",
   "#845EC2","#FF9671","#00C9A7","#C34A36"
 ];
 
-// 🎨 Cores por linguagem
-const LANG_COLORS = {
-  JavaScript: "#F7DF1E",
-  TypeScript: "#3178C6",
-  Python: "#3572A5",
-  Java: "#B07219",
-  HTML: "#E34C26",
-  CSS: "#563D7C",
-  Shell: "#89E051",
-  C: "#555555",
-  "C++": "#F34B7D",
-  Go: "#00ADD8",
-  Rust: "#DEA584"
-};
-
-function generateDashboard(data){
+function generateDashboard(data) {
 
   const {
+    stars = 0,
     followers = 0,
     totalProjects = 0,
-    stars = 0,
     languages = {},
     repos = []
   } = data;
@@ -36,172 +19,154 @@ function generateDashboard(data){
   const width = 1000;
   const cardPadding = 60;
 
-  let y = 200;
+  let y = 220;
+
   let langBars = "";
   let i = 0;
 
-  const totalLang = Object.values(languages)
-    .reduce((a,b)=>a+b,0);
+  const totalLang = Object.values(languages).reduce((a,b)=>a+b,0);
 
-  const sortedLang = Object.entries(languages)
+  const sortedLang =
+    Object.entries(languages)
     .sort((a,b)=>b[1]-a[1])
     .slice(0,6);
 
-  // 📊 BARRAS DE LINGUAGEM
+  // 📊 Linguagens
   sortedLang.forEach(([lang,val])=>{
 
-    const percent = totalLang
-      ? ((val/totalLang)*100).toFixed(1)
-      : 0;
+    const percent =
+      totalLang ? ((val/totalLang)*100).toFixed(1) : 0;
 
     const barWidth = percent * 5;
+
     const color = COLORS[i % COLORS.length];
 
     langBars += `
-      <text x="${cardPadding}" y="${y}" fill="#E6EDF3" font-size="14">
-        ${lang}
-      </text>
-
-      <rect x="260" y="${y-14}" rx="10"
-        width="450" height="16"
-        fill="#21262D"/>
-
-      <rect x="260" y="${y-14}" rx="10"
-        width="0" height="16"
-        fill="${color}">
-        <animate attributeName="width"
-                 from="0"
-                 to="${barWidth}"
-                 dur="1.2s"
-                 fill="freeze"/>
+      <text x="${cardPadding}" y="${y}" fill="#E6EDF3" font-size="14">${lang}</text>
+      <rect x="260" y="${y-14}" rx="10" width="450" height="16" fill="#21262D"/>
+      <rect x="260" y="${y-14}" rx="10" width="0" height="16" fill="${color}">
+        <animate attributeName="width" from="0" to="${barWidth}" dur="1.2s" fill="freeze"/>
       </rect>
-
-      <text x="730" y="${y}" fill="#8B949E" font-size="12">
-        ${percent}%
-      </text>
+      <text x="730" y="${y}" fill="#8B949E" font-size="12">${percent}%</text>
     `;
 
     y += 40;
     i++;
+
   });
 
-  y += 80;
-
-  const reposTitleY = y;
-  y += 50;
+  const reposTitleY = y + 40;
 
   let repoList = "";
+  let repoY = reposTitleY + 30;
 
-  // 📦 LISTA DE REPOSITÓRIOS
+  // 📦 Repositórios
   repos
-    .sort((a,b)=>{
-      const starsA = a.stars ?? a.stargazerCount ?? 0;
-      const starsB = b.stars ?? b.stargazerCount ?? 0;
-      return starsB - starsA;
-    })
-    .forEach(repo=>{
+    .sort((a,b)=>(b.stargazerCount || 0) - (a.stargazerCount || 0))
+    .forEach(r=>{
 
-      const repoStars = repo.stars ?? repo.stargazerCount ?? 0;
-
-      // ✅ CORREÇÃO AQUI
+      // 🔥 CORREÇÃO PRINCIPAL (compatibilidade total)
       const repoLang =
-        repo.language ||
-        repo.primaryLanguage?.name ||
+        r.language ||
+        r.primaryLanguage?.name ||
         "—";
 
-      const langColor = LANG_COLORS[repoLang] || "#8B949E";
+      const repoStars =
+        r.stars ??
+        r.stargazerCount ??
+        0;
 
       repoList += `
-        <text x="${cardPadding}" y="${y}"
-          fill="#58A6FF"
-          font-size="14">
-          📦 ${repo.name}
+        <text x="${cardPadding}" y="${repoY}" fill="#58A6FF" font-size="14">
+          📦 ${r.name}
         </text>
 
-        <text x="${cardPadding+350}" y="${y}"
-          fill="#FFD93D"
-          font-size="14">
+        <text x="${cardPadding + 350}" y="${repoY}" fill="#FFD93D" font-size="14">
           ⭐ ${repoStars}
         </text>
 
-        <text x="${cardPadding+450}" y="${y}"
-          fill="${langColor}"
-          font-size="12">
+        <text x="${cardPadding + 450}" y="${repoY}" fill="#8B949E" font-size="12">
           ${repoLang}
         </text>
       `;
-      y += 28;
+
+      repoY += 28;
+
     });
 
-  const height = y + 80;
+  const height = repoY + 80;
 
   const svg = `
-  <svg width="${width}" height="${height}" xmlns="http://www.w3.org/2000/svg">
+<svg width="${width}" height="${height}" xmlns="http://www.w3.org/2000/svg">
 
-    <rect width="100%" height="100%" fill="#0D1117"/>
+  <rect width="100%" height="100%" fill="#0D1117"/>
 
-    <rect x="20" y="20" width="${width-40}" height="${height-40}"
-      rx="25"
-      fill="#161B22"
-      stroke="#30363D"/>
+  <rect x="20" y="20" width="${width-40}" height="${height-40}" rx="25"
+  fill="#161B22" stroke="#30363D"/>
 
-    <text x="${cardPadding}" y="80"
-      fill="#58A6FF"
-      font-size="28"
-      font-weight="bold">
-      📊 Dashboard de Repositórios
-    </text>
+  <text x="${cardPadding}" y="80"
+  fill="#58A6FF"
+  font-size="28"
+  font-weight="bold">
+  📊 Dashboard de Repositórios
+  </text>
 
-    <text x="${cardPadding}" y="130"
-      fill="#E6EDF3"
-      font-size="16">
-      👥 ${followers} Seguidores
-    </text>
+  <text x="${cardPadding}" y="130"
+  fill="#E6EDF3"
+  font-size="16">
+  📦 ${totalProjects} Repositórios
+  </text>
 
-    <text x="${cardPadding+300}" y="130"
-      fill="#E6EDF3"
-      font-size="16">
-      📦 ${totalProjects} Repositórios
-    </text>
+  <text x="${cardPadding+250}" y="130"
+  fill="#FFD93D"
+  font-size="16">
+  ⭐ ${stars} Stars
+  </text>
 
-    <text x="${cardPadding+600}" y="130"
-      fill="#E6EDF3"
-      font-size="16">
-      ⭐ ${stars} Stars
-    </text>
+  <text x="${cardPadding+420}" y="130"
+  fill="#DA70D6"
+  font-size="16">
+  👥 ${followers} Seguidores
+  </text>
 
-    <text x="${cardPadding}" y="170"
-      fill="#8B949E"
-      font-size="16">
-      Linguagens Mais Utilizadas
-    </text>
+  <text x="${cardPadding}" y="180"
+  fill="#8B949E"
+  font-size="16">
+  Linguagens Mais Utilizadas
+  </text>
 
-    ${langBars}
+  ${langBars}
 
-    <line x1="${cardPadding}" 
-          y1="${reposTitleY-20}" 
-          x2="${width-cardPadding}" 
-          y2="${reposTitleY-20}" 
-          stroke="#30363D"/>
+  <line
+    x1="${cardPadding}"
+    y1="${reposTitleY-20}"
+    x2="${width-cardPadding}"
+    y2="${reposTitleY-20}"
+    stroke="#30363D"
+  />
 
-    <text x="${cardPadding}" y="${reposTitleY}"
-      fill="#8B949E"
-      font-size="18"
-      font-weight="bold">
-      📂 Todos os Repositórios (${repos.length})
-    </text>
+  <text
+    x="${cardPadding}"
+    y="${reposTitleY}"
+    fill="#8B949E"
+    font-size="18"
+    font-weight="bold">
+    📂 Todos os Repositórios (${repos.length})
+  </text>
 
-    ${repoList}
+  ${repoList}
 
-  </svg>
-  `;
+</svg>
+`;
 
-  const outputPath = path.join(__dirname,"..","assets","dashboard.svg");
+  const outputPath =
+    path.join(__dirname,"..","assets","dashboard.svg");
 
-  fs.mkdirSync(path.dirname(outputPath),{recursive:true});
+  fs.mkdirSync(path.dirname(outputPath), {recursive:true});
   fs.writeFileSync(outputPath,svg);
 
   console.log("✅ Dashboard gerado com sucesso.");
+
 }
 
 module.exports = generateDashboard;
