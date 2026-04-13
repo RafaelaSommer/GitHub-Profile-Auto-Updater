@@ -10,7 +10,7 @@ Ele coleta informações do próprio GitHub, gera dashboards e badges, e mantém
 
 - 📊 Monitoramento automático de estatísticas do perfil  
 - 🧠 Distribuição inteligente de projetos por linguagem  
-- ⏱️ Atualização automática a cada 20 minutos, com horário controlado das 7h às 23h  
+- ⏱️ Atualização automática a cada 5 minutos  
 - 🕒 Execução otimizada dentro do horário permitido  
 - 🚀 Sistema de retry automático para maior estabilidade  
 - 🧼 Commit inteligente (evita alterações desnecessárias)  
