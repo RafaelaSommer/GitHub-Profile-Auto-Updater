@@ -1,109 +1,98 @@
-# GitHub Profile Auto Updater 🚀
+# 🚀 GitHub Profile Auto Updater  
 
-Projeto em **Node.js** que atualiza automaticamente o README do perfil do GitHub usando **GitHub Actions**.
+✨ **Automatize seu README e deixe seu perfil sempre atualizado, profissional e impactante!**
 
-Ele coleta informações do próprio GitHub, gera dashboards e badges, e mantém o README sempre atualizado, sem intervenção manual.
-
----
-
-## ✨ Funcionalidades
-
-- 📊 Monitoramento automático de estatísticas do perfil  
-- 🧠 Distribuição inteligente de projetos por linguagem  
-- ⏱️ Atualização automática a cada 5 minutos  
-- 🕒 Execução otimizada dentro do horário permitido  
-- 🚀 Sistema de retry automático para maior estabilidade  
-- 🧼 Commit inteligente (evita alterações desnecessárias)  
-- 🎨 Geração dinâmica de badges e dashboards em SVG  
+Projeto em **Node.js** que atualiza automaticamente o README do perfil do GitHub usando **GitHub Actions**, gerando estatísticas, dashboards e badges dinâmicos em tempo real.
 
 ---
 
-## 🛠️ Scripts e Ferramentas
+## 🔥 Destaques
 
-- `generate-cron.js` — Calcula os próximos horários de execução e controla o agendamento.  
-- `update-readme.js` — Script principal que atualiza o `README.md` a partir do template.  
-- `generate-svg.js` — Gera badges e dashboards em SVG com base nas estatísticas.  
-- `bot-local.js` — Permite execução local e testes do bot.  
-- `iniciar-bot.bat` — Script para iniciar o bot diretamente no Windows.
+- 📊 Estatísticas atualizadas automaticamente  
+- 🧠 Organização inteligente por linguagem  
+- ⚡ Atualização contínua (a cada 5 minutos)  
+- 🕒 Controle de horário de execução  
+- 🔁 Sistema de retry automático  
+- 🧼 Evita commits desnecessários  
+- 🎨 Dashboards e badges em SVG dinâmicos  
+- 💼 Ideal para destacar seu perfil no **GitHub e LinkedIn**  
+
+---
+
+## ⚠️ Requisitos para funcionamento perfeito
+
+Para garantir que o bot funcione sem falhas:
+
+- 💻 **Deixe o computador ligado**  
+- 🧠 **Mantenha o VS Code aberto (recomendado para testes locais)**  
+- 🌐 Certifique-se de que há conexão com a internet  
+- 🔑 Tokens e configurações devem estar corretos  
+
+> 💡 *Mesmo rodando via GitHub Actions, manter o ambiente local ativo ajuda em testes e estabilidade.*
 
 ---
 
 ## 🛠️ Tecnologias Utilizadas
 
-- **GitHub Actions**
-- **GitHub REST API**
-- **Requests**
-- **JSON**
-- **Markdown**
-- **Node.js**
+- Node.js  
+- GitHub Actions  
+- GitHub REST API  
+- JSON  
+- Markdown  
+- SVG (dashboards e badges)  
 
 ---
 
 ## 📁 Estrutura do Projeto
 
 ### 🧠 Templates
-Arquivos base usados para gerar automaticamente o README final.
-
-- `templates/README.template.md`  
-  Template do README, onde ficam os textos fixos e os placeholders dinâmicos.
+- `templates/README.template.md` → Base do README com placeholders dinâmicos  
 
 ---
 
 ### ⚙️ Scripts
-Responsáveis por coletar dados do GitHub, gerar dashboards e atualizar o README automaticamente.
 
-- `scripts/update-readme.js`  
-  Script principal que consulta a GitHub API, processa os dados e gera o `README.md`.  
-- `scripts/generate-dashboard.js`  
-  Gera badges e dashboards em SVG com base nas estatísticas do perfil.  
-- `scripts/generate-cron.js`  
-  Calcula os próximos horários de atualização e controla a execução do bot.  
-- `scripts/bot-local.js`  
-  Permite executar o bot localmente para testes e atualizações manuais.  
-- `iniciar-bot.bat`  
-  Script para iniciar o bot diretamente no Windows.
+- `scripts/update-readme.js` → Atualiza o README automaticamente  
+- `scripts/generate-dashboard.js` → Gera dashboards em SVG  
+- `scripts/generate-cron.js` → Controla horários de execução  
+- `scripts/bot-local.js` → Execução local  
+- `iniciar-bot.bat` → Inicialização rápida no Windows  
 
 ---
 
 ### 🔧 Configurações
-Centraliza as informações do projeto.
 
-- `.github/settings.json`  
-  Usuário do GitHub, fuso horário, intervalo de atualização e horários permitidos.
+- `.github/settings.json` → Define usuário, horário e intervalos  
 
 ---
 
-### 🤖 Automação (GitHub Actions)
-Workflows que executam os scripts automaticamente.
+### 🤖 Automação
 
 - `.github/workflows/update-readme.yml`  
-  Agenda a execução automática a cada 20 minutos, dentro do horário permitido, e permite execução manual.
+  Executa automaticamente e permite execução manual  
 
 ---
 
 ### 📄 Arquivos principais
 
-- `README.md`  
-  README final do perfil (gerado automaticamente).  
-- `package.json`  
-  Dependências do projeto Node.js e scripts NPM.  
-- `package-lock.json`  
-  Trava de versões de pacotes.  
-- `.gitignore`  
-  Arquivos e pastas ignorados pelo Git.
+- `README.md` → Gerado automaticamente  
+- `package.json` → Dependências  
+- `package-lock.json` → Controle de versões  
+- `.gitignore` → Arquivos ignorados  
+
 ---
 
 ## ⚙️ Como Funciona
 
-1. O **GitHub Actions** executa o script JavaScript 
-2. O script consulta a **GitHub REST API**  
-3. Os dados são processados em tempo real  
-4. O `README.md` é gerado a partir do `README.template.md`  
-5. Se não houver alterações, **nenhum commit é feito**  
+1. GitHub Actions executa o script  
+2. O bot consulta a GitHub API  
+3. Os dados são processados  
+4. O README é gerado automaticamente  
+5. Se não houver mudanças → nenhum commit é feito  
 
 ---
 
-### 📊 Dashboard
+## 📊 Dashboard
 
 <p align="center">
   <img src="./assets/dashboard.svg" />
@@ -118,10 +107,10 @@ Workflows que executam os scripts automaticamente.
 👥 **Seguidores:** 339
 
 🕒 **Última atualização:**  
-14/04/2026 16:06:04
+14/04/2026 16:11:30
 
 ⏭ **Próxima atualização:**  
-14/04/2026 16:11:04
+14/04/2026 16:16:30
 
 <!--END_SECTION:dynamic-->
 
@@ -129,63 +118,48 @@ Workflows que executam os scripts automaticamente.
 
 ## ▶️ Executar Manualmente
 
-### No GitHub
-1. Vá até a aba **Actions** do repositório.  
-2. Selecione o workflow **Update README**.  
-3. Clique em **Run workflow**.
-
-### Localmente
-1. Execute `bot-local.js` via Node.js.  
-2. Ou use o `iniciar-bot.bat` no Windows para iniciar o bot.
+### 🔹 No GitHub
+1. Vá em **Actions**  
+2. Clique em **Update README**  
+3. Selecione **Run workflow**  
 
 ---
 
-## 📌 Exemplo de Uso
+### 🔹 Localmente
 
-Ideal para:
-- README de perfil  
-- Portfólio de desenvolvedor  
-- Demonstração de automação com GitHub Actions  
-- Projetos open source  
+```bash
+node scripts/bot-local.js
 
----
+Ou no Windows:
 
-## 👩‍💻 Autora  
-
-<p align="center">
-
-<a href="https://www.linkedin.com/in/rafaelasommergon%C3%A7alves16/">
-<img src="https://img.shields.io/badge/LinkedIn-Rafaela%20Sommer-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white"
-style="border-radius:12px; transition:0.3s;"
-onmouseover="this.style.transform='scale(1.1)'; this.style.boxShadow='0 0 15px #0A66C2';"
-onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='none';"/>
-</a>
-
-<a href="https://github.com/RafaelaSommer">
-<img src="https://img.shields.io/badge/GitHub-RafaelaSommer-181717?style=for-the-badge&logo=github&logoColor=white"
-style="border-radius:12px; transition:0.3s;"
-onmouseover="this.style.transform='scale(1.1)'; this.style.boxShadow='0 0 15px #181717';"
-onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='none';"/>
-</a>
-
-<a href="https://wa.me/5519971015465">
-<img src="https://img.shields.io/badge/WhatsApp-Entre%20em%20contato-25D366?style=for-the-badge&logo=whatsapp&logoColor=white"
-style="border-radius:12px; transition:0.3s;"
-onmouseover="this.style.transform='scale(1.1)'; this.style.boxShadow='0 0 15px #25D366';"
-onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='none';"/>
-</a>
-
-</p>
+iniciar-bot.bat
 
 ---
 
-### 💡 Sobre
+#3💡 Ideal para
+💼 Portfólio profissional
+📄 README de perfil
+🤖 Projetos de automação
+🔗 Destaque no LinkedIn
+🧠 Demonstração de habilidades com APIs
 
-Desenvolvedora focada em **automação**, **dados** e **boas práticas**, utilizando  
-**Python**, **GitHub Actions** e **APIs** para criar soluções inteligentes e reutilizáveis.
+##👩‍💻 Autora
+<p align="center"> <a href="https://www.linkedin.com/in/rafaelasommergon%C3%A7alves16/"> <img src="https://img.shields.io/badge/LinkedIn-Rafaela%20Sommer-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white"/> </a> <a href="https://github.com/RafaelaSommer"> <img src="https://img.shields.io/badge/GitHub-RafaelaSommer-181717?style=for-the-badge&logo=github&logoColor=white"/> </a> <a href="https://wa.me/5519971015465"> <img src="https://img.shields.io/badge/WhatsApp-Entre%20em%20contato-25D366?style=for-the-badge&logo=whatsapp&logoColor=white"/> </a> </p>
 
----
+##🌟 Diferencial
 
-⚠️ **Este arquivo é um template**  
-✏️ Edite apenas `templates/README.template.md`  
-🤖 O arquivo `README.md` é gerado automaticamente
+✔️ README sempre atualizado automaticamente
+✔️ Perfil mais profissional e atrativo
+✔️ Destaque imediato para recrutadores
+✔️ Integração perfeita com GitHub e LinkedIn
+
+##💬 Sobre
+
+Desenvolvedora focada em automação, dados e boas práticas, criando soluções inteligentes com:
+
+🐍 Python
+🔗 APIs
+⚙️ GitHub Actions
+⚠️ IMPORTANTE
+✏️ Edite apenas: templates/README.template.md
+🤖 O README.md é gerado automaticamente
