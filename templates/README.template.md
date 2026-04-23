@@ -10,7 +10,7 @@ Ele coleta informações do próprio GitHub, gera dashboards e badges, e mantém
 
 - 📊 Monitoramento automático de estatísticas do perfil  
 - 🧠 Distribuição inteligente de projetos por linguagem  
-- ⏱️ Atualização automática a cada 5 minutos  
+- ⏱️ Atualização automática a cada 10 minutos  
 - 🕒 Execução otimizada dentro do horário permitido  
 - 🚀 Sistema de retry automático para maior estabilidade  
 - 🧼 Commit inteligente (evita alterações desnecessárias)  
@@ -45,7 +45,6 @@ Ele coleta informações do próprio GitHub, gera dashboards e badges, e mantém
 Arquivos base usados para gerar automaticamente o README final.
 
 - `templates/README.template.md`  
-  Template do README, onde ficam os textos fixos e os placeholders dinâmicos.
 
 ---
 
@@ -77,7 +76,7 @@ Centraliza as informações do projeto.
 Workflows que executam os scripts automaticamente.
 
 - `.github/workflows/update-readme.yml`  
-  Agenda a execução automática a cada 20 minutos, dentro do horário permitido, e permite execução manual.
+  Agenda a execução automática a cada 10 minutos, dentro do horário permitido, e permite execução manual.
 
 ---
 
@@ -91,11 +90,12 @@ Workflows que executam os scripts automaticamente.
   Trava de versões de pacotes.  
 - `.gitignore`  
   Arquivos e pastas ignorados pelo Git.
+
 ---
 
 ## ⚙️ Como Funciona
 
-1. O **GitHub Actions** executa o script JavaScript 
+1. O **GitHub Actions** executa o script JavaScript  
 2. O script consulta a **GitHub REST API**  
 3. Os dados são processados em tempo real  
 4. O `README.md` é gerado a partir do `README.template.md`  
@@ -133,8 +133,12 @@ Carregando...
 3. Clique em **Run workflow**.
 
 ### Localmente
-1. Execute `bot-local.js` via Node.js.  
-2. Ou use o `iniciar-bot.bat` no Windows para iniciar o bot.
+1. Deixe o PC ou notebook ligado  
+2. Abra o projeto no VS Code  
+3. Execute no terminal:
+
+```bash
+npm run setup
 
 ---
 
