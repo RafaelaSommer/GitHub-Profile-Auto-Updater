@@ -90,10 +90,10 @@ Automação e geração de dados
 👥 **Seguidores:** 348
 
 🕒 **Última atualização:**  
-24/04/2026 15:46:23
+24/04/2026 15:52:32
 
 ⏭ **Próxima atualização:**  
-24/04/2026 15:56:23
+24/04/2026 16:02:32
 
 <!--END_SECTION:dynamic-->
 
@@ -113,14 +113,20 @@ Automação e geração de dados
 npm run setup
 ```
 
+<br>
+
+> ⚠️ **Observação importante:**
+> Para execução local contínua, mantenha o **VS Code aberto** com o projeto rodando e o comando `npm run setup` ativo.
+> Além disso, deixe o **PC ou notebook ligado**, caso contrário o bot será interrompido.
+
 ---
 
 ## 💡 Onde Usar
 
-✔️ README de perfil
-✔️ Portfólios modernos
-✔️ Projetos de automação
-✔️ Demonstrações com GitHub Actions
+- ✔️ README de perfil
+- ✔️ Portfólios modernos
+- ✔️ Projetos de automação
+- ✔️ Demonstrações com GitHub Actions
 
 ---
 
@@ -148,13 +154,13 @@ npm run setup
 
 Desenvolvedora focada em **automação**, **dados** e **boas práticas**, criando soluções inteligentes com:
 
-🐍 Python
-⚙️ GitHub Actions
-🔗 APIs
+- 🐍 Python
+- ⚙️ GitHub Actions
+- 🔗 APIs
 
 ---
 
-⚠️ **IMPORTANTE**
-Este é um template.
+## ⚠️ **IMPORTANTE**
+- Este é um template.
 ✏️ Edite apenas `templates/README.template.md`
 🤖 O `README.md` é gerado automaticamente
