@@ -8,13 +8,13 @@ Este projeto em **Node.js** utiliza **GitHub Actions** para manter seu `README.m
 
 ## ✨ Destaques
 
-🔥 Atualização automática do README
-📊 Estatísticas do perfil em tempo real
-🎯 Organização inteligente por linguagem
-⏱️ Execução automática a cada 10 minutos
-🔁 Sistema de retry para maior confiabilidade
-🧼 Commits inteligentes (sem alterações desnecessárias)
-🎨 Dashboards e badges dinâmicos em SVG
+- 🔥 Atualização automática do README
+- 📊 Estatísticas do perfil em tempo real
+- 🎯 Organização inteligente por linguagem
+- ⏱️ Execução automática a cada 10 minutos
+- 🔁 Sistema de retry para maior confiabilidade
+- 🧼 Commits inteligentes (sem alterações desnecessárias)
+- 🎨 Dashboards e badges dinâmicos em SVG
 
 ---
 
@@ -90,10 +90,10 @@ Automação e geração de dados
 👥 **Seguidores:** 348
 
 🕒 **Última atualização:**  
-24/04/2026 15:41:53
+24/04/2026 15:46:23
 
 ⏭ **Próxima atualização:**  
-24/04/2026 15:51:53
+24/04/2026 15:56:23
 
 <!--END_SECTION:dynamic-->
 
