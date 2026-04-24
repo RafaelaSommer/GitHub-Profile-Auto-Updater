@@ -160,5 +160,5 @@ Desenvolvedora focada em **automação**, **dados** e **boas práticas**, criand
 
 ## ⚠️ **IMPORTANTE**
 - Este é um template.
-✏️ Edite apenas `templates/README.template.md`
-🤖 O `README.md` é gerado automaticamente
+- ✏️ Edite apenas `templates/README.template.md`
+- 🤖 O `README.md` é gerado automaticamente

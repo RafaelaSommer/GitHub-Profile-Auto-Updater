@@ -90,10 +90,10 @@ Automação e geração de dados
 👥 **Seguidores:** 348
 
 🕒 **Última atualização:**  
-24/04/2026 15:52:32
+24/04/2026 15:55:08
 
 ⏭ **Próxima atualização:**  
-24/04/2026 16:02:32
+24/04/2026 16:05:08
 
 <!--END_SECTION:dynamic-->
 
@@ -162,5 +162,5 @@ Desenvolvedora focada em **automação**, **dados** e **boas práticas**, criand
 
 ## ⚠️ **IMPORTANTE**
 - Este é um template.
-✏️ Edite apenas `templates/README.template.md`
-🤖 O `README.md` é gerado automaticamente
+- ✏️ Edite apenas `templates/README.template.md`
+- 🤖 O `README.md` é gerado automaticamente
