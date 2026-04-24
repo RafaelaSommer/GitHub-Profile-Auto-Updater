@@ -1,109 +1,81 @@
-# GitHub Profile Auto Updater 🚀
+# 🚀 GitHub Profile Auto Updater
 
-Projeto em **Node.js** que atualiza automaticamente o README do perfil do GitHub usando **GitHub Actions**.
+Transforme seu perfil do GitHub em um painel dinâmico e profissional — atualizado automaticamente, sem esforço.
 
-Ele coleta informações do próprio GitHub, gera dashboards e badges, e mantém o README sempre atualizado, sem intervenção manual.
-
----
-
-## ✨ Funcionalidades
-
-- 📊 Monitoramento automático de estatísticas do perfil  
-- 🧠 Distribuição inteligente de projetos por linguagem  
-- ⏱️ Atualização automática a cada 10 minutos  
-- 🕒 Execução otimizada dentro do horário permitido  
-- 🚀 Sistema de retry automático para maior estabilidade  
-- 🧼 Commit inteligente (evita alterações desnecessárias)  
-- 🎨 Geração dinâmica de badges e dashboards em SVG  
+Este projeto em **Node.js** utiliza **GitHub Actions** para manter seu `README.md` sempre atualizado com estatísticas, badges e dashboards modernos.
 
 ---
 
-## 🛠️ Scripts e Ferramentas
+## ✨ Destaques
 
-- `generate-cron.js` — Calcula os próximos horários de execução e controla o agendamento.  
-- `update-readme.js` — Script principal que atualiza o `README.md` a partir do template.  
-- `generate-svg.js` — Gera badges e dashboards em SVG com base nas estatísticas.  
-- `bot-local.js` — Permite execução local e testes do bot.  
-- `iniciar-bot.bat` — Script para iniciar o bot diretamente no Windows.
+🔥 Atualização automática do README
+📊 Estatísticas do perfil em tempo real
+🎯 Organização inteligente por linguagem
+⏱️ Execução automática a cada 10 minutos
+🔁 Sistema de retry para maior confiabilidade
+🧼 Commits inteligentes (sem alterações desnecessárias)
+🎨 Dashboards e badges dinâmicos em SVG
 
 ---
 
-## 🛠️ Tecnologias Utilizadas
+## 🧠 Como Funciona
 
-- **GitHub Actions**
-- **GitHub REST API**
-- **Requests**
-- **JSON**
-- **Markdown**
-- **Node.js**
+1. O workflow do **GitHub Actions** é acionado automaticamente
+2. Os scripts consultam a **GitHub REST API**
+3. Os dados são processados e organizados
+4. O `README.md` é gerado com base no template
+5. Se não houver mudanças, nenhum commit é realizado
+
+✔️ Simples, eficiente e totalmente automatizado
+
+---
+
+## 🛠️ Stack Utilizada
+
+* Node.js
+* GitHub Actions
+* GitHub REST API
+* JSON
+* Markdown
+* SVG
 
 ---
 
 ## 📁 Estrutura do Projeto
 
 ### 🧠 Templates
-Arquivos base usados para gerar automaticamente o README final.
 
-- `templates/README.template.md`  
+Arquivo base para geração do README final
 
----
+* `templates/README.template.md`
 
 ### ⚙️ Scripts
-Responsáveis por coletar dados do GitHub, gerar dashboards e atualizar o README automaticamente.
 
-- `scripts/update-readme.js`  
-  Script principal que consulta a GitHub API, processa os dados e gera o `README.md`.  
-- `scripts/generate-dashboard.js`  
-  Gera badges e dashboards em SVG com base nas estatísticas do perfil.  
-- `scripts/generate-cron.js`  
-  Calcula os próximos horários de atualização e controla a execução do bot.  
-- `scripts/bot-local.js`  
-  Permite executar o bot localmente para testes e atualizações manuais.  
-- `iniciar-bot.bat`  
-  Script para iniciar o bot diretamente no Windows.
+Automação e geração de dados
 
----
+* `scripts/update-readme.js` → Atualiza o README
+* `scripts/generate-dashboard.js` → Cria dashboards SVG
+* `scripts/generate-cron.js` → Controla agendamentos
+* `scripts/bot-local.js` → Execução local
+* `iniciar-bot.bat` → Inicialização no Windows
 
 ### 🔧 Configurações
-Centraliza as informações do projeto.
 
-- `.github/settings.json`  
-  Usuário do GitHub, fuso horário, intervalo de atualização e horários permitidos.
+* `.github/settings.json` → Define usuário, horários e intervalo
 
----
+### 🤖 Automação
 
-### 🤖 Automação (GitHub Actions)
-Workflows que executam os scripts automaticamente.
-
-- `.github/workflows/update-readme.yml`  
-  Agenda a execução automática a cada 10 minutos, dentro do horário permitido, e permite execução manual.
-
----
+* `.github/workflows/update-readme.yml` → Workflow principal
 
 ### 📄 Arquivos principais
 
-- `README.md`  
-  README final do perfil (gerado automaticamente).  
-- `package.json`  
-  Dependências do projeto Node.js e scripts NPM.  
-- `package-lock.json`  
-  Trava de versões de pacotes.  
-- `.gitignore`  
-  Arquivos e pastas ignorados pelo Git.
+* `README.md` (gerado automaticamente)
+* `package.json`
+* `.gitignore`
 
 ---
 
-## ⚙️ Como Funciona
-
-1. O **GitHub Actions** executa o script JavaScript  
-2. O script consulta a **GitHub REST API**  
-3. Os dados são processados em tempo real  
-4. O `README.md` é gerado a partir do `README.template.md`  
-5. Se não houver alterações, **nenhum commit é feito**  
-
----
-
-### 📊 Dashboard
+## 📊 Dashboard
 
 <p align="center">
   <img src="./assets/dashboard.svg" />
@@ -115,10 +87,10 @@ Workflows que executam os scripts automaticamente.
 
 ## 🔄 Atualização Automática
 
-🕒 Última atualização:  
+🕒 Última atualização:
 Carregando...
 
-🔁 Próxima atualização automática:  
+🔁 Próxima atualização automática:
 Carregando...
 
 <!--END_SECTION:dynamic-->
@@ -127,67 +99,60 @@ Carregando...
 
 ## ▶️ Executar Manualmente
 
-### No GitHub
-1. Vá até a aba **Actions** do repositório.  
-2. Selecione o workflow **Update README**.  
-3. Clique em **Run workflow**.
+### 🌐 Pelo GitHub
 
-### Localmente
-1. Deixe o PC ou notebook ligado  
-2. Abra o projeto no VS Code  
-3. Execute no terminal:
+1. Acesse a aba **Actions**
+2. Selecione **Update README**
+3. Clique em **Run workflow**
+
+### 💻 Localmente
 
 ```bash
 npm run setup
+```
 
 ---
 
-## 📌 Exemplo de Uso
+## 💡 Onde Usar
 
-Ideal para:
-- README de perfil  
-- Portfólio de desenvolvedor  
-- Demonstração de automação com GitHub Actions  
-- Projetos open source  
+✔️ README de perfil
+✔️ Portfólios modernos
+✔️ Projetos de automação
+✔️ Demonstrações com GitHub Actions
 
 ---
 
-## 👩‍💻 Autora  
+## 👩‍💻 Autora
 
 <p align="center">
 
 <a href="https://www.linkedin.com/in/rafaelasommergon%C3%A7alves16/">
-<img src="https://img.shields.io/badge/LinkedIn-Rafaela%20Sommer-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white"
-style="border-radius:12px; transition:0.3s;"
-onmouseover="this.style.transform='scale(1.1)'; this.style.boxShadow='0 0 15px #0A66C2';"
-onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='none';"/>
+<img src="https://img.shields.io/badge/LinkedIn-Rafaela%20Sommer-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white"/>
 </a>
 
 <a href="https://github.com/RafaelaSommer">
-<img src="https://img.shields.io/badge/GitHub-RafaelaSommer-181717?style=for-the-badge&logo=github&logoColor=white"
-style="border-radius:12px; transition:0.3s;"
-onmouseover="this.style.transform='scale(1.1)'; this.style.boxShadow='0 0 15px #181717';"
-onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='none';"/>
+<img src="https://img.shields.io/badge/GitHub-RafaelaSommer-181717?style=for-the-badge&logo=github&logoColor=white"/>
 </a>
 
 <a href="https://wa.me/5519971015465">
-<img src="https://img.shields.io/badge/WhatsApp-Entre%20em%20contato-25D366?style=for-the-badge&logo=whatsapp&logoColor=white"
-style="border-radius:12px; transition:0.3s;"
-onmouseover="this.style.transform='scale(1.1)'; this.style.boxShadow='0 0 15px #25D366';"
-onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='none';"/>
+<img src="https://img.shields.io/badge/WhatsApp-Contato-25D366?style=for-the-badge&logo=whatsapp&logoColor=white"/>
 </a>
 
 </p>
 
 ---
 
-### 💡 Sobre
+## ⚡ Sobre
 
-Desenvolvedora focada em **automação**, **dados** e **boas práticas**, utilizando  
-**Python**, **GitHub Actions** e **APIs** para criar soluções inteligentes e reutilizáveis.
+Desenvolvedora focada em **automação**, **dados** e **boas práticas**, criando soluções inteligentes com:
+
+🐍 Python
+⚙️ GitHub Actions
+🔗 APIs
 
 ---
 
-⚠️ **Este arquivo é um template**  
-✏️ Edite apenas `templates/README.template.md`  
-🤖 O arquivo `README.md` é gerado automaticamente
+⚠️ **IMPORTANTE**
+Este é um template.
+✏️ Edite apenas `templates/README.template.md`
+🤖 O `README.md` é gerado automaticamente
