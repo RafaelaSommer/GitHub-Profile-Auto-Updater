@@ -88,10 +88,10 @@ ${end}`
   }
 
   // 🔥 Remove seção "IMPORTANTE" de forma robusta (somente no README final)
-  content = content.replace(
-    /## ⚠️ \*\*IMPORTANTE\*\*[\s\S]*?(?=\n##|\n---|$)/g,
-    ''
-  ).trim()
+ content = content.replace(
+  /<!--START_IMPORTANTE-->[\s\S]*?<!--END_IMPORTANTE-->/g,
+  ''
+).trim()
 
   const updated = content.replace(regex, newBlock)
 
