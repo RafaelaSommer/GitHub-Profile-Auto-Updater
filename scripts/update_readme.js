@@ -81,20 +81,23 @@ ${end}`
 
   if (!regex.test(content)) {
     console.error("❌ Bloco dinâmico NÃO encontrado no README")
+    console.error("👉 Verifique se existe exatamente:")
+    console.error(start)
+    console.error(end)
     process.exit(1)
   }
 
-  // 🔥 Remove seção "IMPORTANTE"
+  // 🔥 Remove seção "IMPORTANTE" de forma robusta (somente no README final)
   content = content.replace(
-    /## ⚠️ \*\*IMPORTANTE\*\*[\s\S]*?(?=\n##|$)/,
+    /## ⚠️ \*\*IMPORTANTE\*\*[\s\S]*?(?=\n##|\n---|$)/g,
     ''
-  )
+  ).trim()
 
   const updated = content.replace(regex, newBlock)
 
   fs.writeFileSync(readmePath, updated, "utf8")
 
-  console.log("✅ README atualizado com sucesso")
+  console.log("✅ README atualizado com sucesso (sem seção IMPORTANTE)")
 }
 
 async function main() {
