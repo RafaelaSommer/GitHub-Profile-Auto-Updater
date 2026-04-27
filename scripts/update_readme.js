@@ -64,6 +64,40 @@ async function fetchGitHub() {
   }
 }
 
+function removeImportanteSection(content) {
+  // 🔎 Debug
+  console.log("🔍 Procurando seção IMPORTANTE...")
+
+  if (!content.toLowerCase().includes("importante")) {
+    console.log("ℹ️ Nenhuma seção IMPORTANTE encontrada")
+    return content
+  }
+
+  // 🔥 Estratégia 1 (precisa e rápida)
+  const exactIndex = content.indexOf("## ⚠️ **IMPORTANTE**")
+
+  if (exactIndex !== -1) {
+    console.log("✅ Seção IMPORTANTE encontrada (match exato)")
+    return content.slice(0, exactIndex).trim()
+  }
+
+  // 🔥 Estratégia 2 (fallback robusto)
+  const genericIndex = content.toLowerCase().indexOf("importante")
+
+  if (genericIndex !== -1) {
+    console.log("⚠️ Usando fallback genérico para remover seção")
+
+    const startOfLine = content.lastIndexOf("\n", genericIndex)
+
+    if (startOfLine !== -1) {
+      return content.slice(0, startOfLine).trim()
+    }
+  }
+
+  console.log("⚠️ Não foi possível remover a seção IMPORTANTE")
+  return content
+}
+
 function updateReadme(dynamicContent) {
 
   const readmePath = path.join(ROOT, "README.md")
@@ -87,12 +121,10 @@ ${end}`
     process.exit(1)
   }
 
-  // 🔥 Remove seção "IMPORTANTE" de forma robusta (somente no README final)
- content = content.replace(
-  /<!--START_IMPORTANTE-->[\s\S]*?<!--END_IMPORTANTE-->/g,
-  ''
-).trim()
+  // 🔥 Remove seção IMPORTANTE com estratégia robusta
+  content = removeImportanteSection(content)
 
+  // 🔁 Atualiza bloco dinâmico
   const updated = content.replace(regex, newBlock)
 
   fs.writeFileSync(readmePath, updated, "utf8")
