@@ -7,10 +7,10 @@ const path = require("path")
 const axios = require("axios")
 const { DateTime } = require("luxon")
 
-const ROOT = path.join(__dirname,"..")
+const ROOT = path.join(__dirname, "..")
 
 const SETTINGS = JSON.parse(
-  fs.readFileSync(path.join(ROOT,".github/settings.json"),"utf8")
+  fs.readFileSync(path.join(ROOT, ".github/settings.json"), "utf8")
 )
 
 const USER = SETTINGS.github_user
@@ -19,15 +19,13 @@ const INTERVAL = SETTINGS.interval_minutes
 
 const TOKEN = process.env.GITHUB_TOKEN
 
-if(!TOKEN){
+if (!TOKEN) {
   console.error("❌ GITHUB_TOKEN não encontrado")
   process.exit(1)
 }
 
-async function fetchGitHub(){
-
-  try{
-
+async function fetchGitHub() {
+  try {
     const res = await axios.post(
       "https://api.github.com/graphql",
       {
@@ -44,35 +42,33 @@ async function fetchGitHub(){
         }`
       },
       {
-        headers:{
-          Authorization:`Bearer ${TOKEN}`
+        headers: {
+          Authorization: `Bearer ${TOKEN}`
         }
       }
     )
 
     return res.data.data.user
 
-  }catch(err){
-
+  } catch (err) {
     console.error("❌ Erro ao buscar dados do GitHub")
 
-    if(err.response){
-      console.error("Status:",err.response.status)
-      console.error("Resposta:",err.response.data)
-    }else{
+    if (err.response) {
+      console.error("Status:", err.response.status)
+      console.error("Resposta:", err.response.data)
+    } else {
       console.error(err.message)
     }
 
     process.exit(1)
   }
-
 }
 
-function updateReadme(dynamicContent){
+function updateReadme(dynamicContent) {
 
-  const readmePath = path.join(ROOT,"README.md")
+  const readmePath = path.join(ROOT, "README.md")
 
-  let content = fs.readFileSync(readmePath,"utf8")
+  let content = fs.readFileSync(readmePath, "utf8")
 
   const start = "<!--START_SECTION:dynamic-->"
   const end = "<!--END_SECTION:dynamic-->"
@@ -83,22 +79,25 @@ function updateReadme(dynamicContent){
 ${dynamicContent.trim()}
 ${end}`
 
-  if(!regex.test(content)){
+  if (!regex.test(content)) {
     console.error("❌ Bloco dinâmico NÃO encontrado no README")
-    console.error("👉 Verifique se existe exatamente:")
-    console.error(start)
-    console.error(end)
     process.exit(1)
   }
 
-  const updated = content.replace(regex,newBlock)
+  // 🔥 Remove seção "IMPORTANTE"
+  content = content.replace(
+    /## ⚠️ \*\*IMPORTANTE\*\*[\s\S]*?(?=\n##|$)/,
+    ''
+  )
 
-  fs.writeFileSync(readmePath,updated,"utf8")
+  const updated = content.replace(regex, newBlock)
+
+  fs.writeFileSync(readmePath, updated, "utf8")
 
   console.log("✅ README atualizado com sucesso")
 }
 
-async function main(){
+async function main() {
 
   const now = DateTime.now().setZone(TIMEZONE)
   const next = now.plus({ minutes: INTERVAL })
@@ -108,7 +107,7 @@ async function main(){
   const repos = user.repositories.nodes
 
   const followers = user.followers.totalCount
-  const stars = repos.reduce((a,r)=>a+r.stargazerCount,0)
+  const stars = repos.reduce((a, r) => a + r.stargazerCount, 0)
 
   const dynamicContent = `
 ## 🔄 Atualização Automática
@@ -120,12 +119,10 @@ ${now.toFormat("dd/MM/yyyy HH:mm:ss")} (Horário de Brasília)
 ${next.toFormat("dd/MM/yyyy HH:mm:ss")} (Horário de Brasília)
 
 📊 **Followers:** ${followers}  
-📦 **Projetos:** ${repos.length}  
 ⭐ **Stars:** ${stars}
 `
 
   updateReadme(dynamicContent)
-
 }
 
 main()
