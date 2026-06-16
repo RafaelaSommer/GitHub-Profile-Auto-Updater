@@ -1,9 +1,9 @@
 
-<svg width="1000" height="646" xmlns="http://www.w3.org/2000/svg">
+<svg width="1000" height="714" xmlns="http://www.w3.org/2000/svg">
 
   <rect width="100%" height="100%" fill="#0D1117"/>
 
-  <rect x="20" y="20" width="960" height="606" rx="25"
+  <rect x="20" y="20" width="960" height="674" rx="25"
   fill="#161B22" stroke="#30363D"/>
 
   <text x="60" y="80"
@@ -16,7 +16,7 @@
   <text x="60" y="130"
   fill="#E6EDF3"
   font-size="16">
-  📦 7 Repositórios
+  📦 8 Repositórios
   </text>
 
   <text x="310" y="130"
@@ -41,118 +41,137 @@
       <text x="60" y="220" fill="#E6EDF3" font-size="14">JavaScript</text>
       <rect x="260" y="206" rx="10" width="450" height="16" fill="#21262D"/>
       <rect x="260" y="206" rx="10" width="0" height="16" fill="#FF6B6B">
-        <animate attributeName="width" from="0" to="400" dur="1.2s" fill="freeze"/>
+        <animate attributeName="width" from="0" to="333.5" dur="1.2s" fill="freeze"/>
       </rect>
-      <text x="730" y="220" fill="#8B949E" font-size="12">80.0%</text>
+      <text x="730" y="220" fill="#8B949E" font-size="12">66.7%</text>
     
       <text x="60" y="260" fill="#E6EDF3" font-size="14">Python</text>
       <rect x="260" y="246" rx="10" width="450" height="16" fill="#21262D"/>
       <rect x="260" y="246" rx="10" width="0" height="16" fill="#6BCB77">
-        <animate attributeName="width" from="0" to="100" dur="1.2s" fill="freeze"/>
+        <animate attributeName="width" from="0" to="83.5" dur="1.2s" fill="freeze"/>
       </rect>
-      <text x="730" y="260" fill="#8B949E" font-size="12">20.0%</text>
+      <text x="730" y="260" fill="#8B949E" font-size="12">16.7%</text>
+    
+      <text x="60" y="300" fill="#E6EDF3" font-size="14">HTML</text>
+      <rect x="260" y="286" rx="10" width="450" height="16" fill="#21262D"/>
+      <rect x="260" y="286" rx="10" width="0" height="16" fill="#4D96FF">
+        <animate attributeName="width" from="0" to="83.5" dur="1.2s" fill="freeze"/>
+      </rect>
+      <text x="730" y="300" fill="#8B949E" font-size="12">16.7%</text>
     
 
   <line
     x1="60"
-    y1="320"
+    y1="360"
     x2="940"
-    y2="320"
+    y2="360"
     stroke="#30363D"
   />
 
   <text
     x="60"
-    y="340"
+    y="380"
     fill="#8B949E"
     font-size="18"
     font-weight="bold">
-    📂 Todos os Repositórios (7)
+    📂 Todos os Repositórios (8)
   </text>
 
   
-        <text x="60" y="370" fill="#58A6FF" font-size="14">
+        <text x="60" y="410" fill="#58A6FF" font-size="14">
           📦 Gerador-de-pastas-e-Excel
         </text>
 
-        <text x="410" y="370" fill="#FFD93D" font-size="14">
+        <text x="410" y="410" fill="#FFD93D" font-size="14">
           ⭐ 5
         </text>
 
-        <text x="510" y="370" fill="#8B949E" font-size="12">
+        <text x="510" y="410" fill="#8B949E" font-size="12">
           Python
         </text>
       
-        <text x="60" y="398" fill="#58A6FF" font-size="14">
+        <text x="60" y="438" fill="#58A6FF" font-size="14">
           📦 RafaelaSommer
         </text>
 
-        <text x="410" y="398" fill="#FFD93D" font-size="14">
+        <text x="410" y="438" fill="#FFD93D" font-size="14">
           ⭐ 2
         </text>
 
-        <text x="510" y="398" fill="#8B949E" font-size="12">
+        <text x="510" y="438" fill="#8B949E" font-size="12">
           JavaScript
         </text>
       
-        <text x="60" y="426" fill="#58A6FF" font-size="14">
+        <text x="60" y="466" fill="#58A6FF" font-size="14">
           📦 GitHub-Profile-Auto-Updater
         </text>
 
-        <text x="410" y="426" fill="#FFD93D" font-size="14">
+        <text x="410" y="466" fill="#FFD93D" font-size="14">
           ⭐ 1
         </text>
 
-        <text x="510" y="426" fill="#8B949E" font-size="12">
+        <text x="510" y="466" fill="#8B949E" font-size="12">
           JavaScript
         </text>
       
-        <text x="60" y="454" fill="#58A6FF" font-size="14">
+        <text x="60" y="494" fill="#58A6FF" font-size="14">
           📦 github-readme-stats
         </text>
 
-        <text x="410" y="454" fill="#FFD93D" font-size="14">
+        <text x="410" y="494" fill="#FFD93D" font-size="14">
           ⭐ 0
         </text>
 
-        <text x="510" y="454" fill="#8B949E" font-size="12">
+        <text x="510" y="494" fill="#8B949E" font-size="12">
           JavaScript
         </text>
       
-        <text x="60" y="482" fill="#58A6FF" font-size="14">
+        <text x="60" y="522" fill="#58A6FF" font-size="14">
           📦 card-validator-senior
         </text>
 
-        <text x="410" y="482" fill="#FFD93D" font-size="14">
+        <text x="410" y="522" fill="#FFD93D" font-size="14">
           ⭐ 0
         </text>
 
-        <text x="510" y="482" fill="#8B949E" font-size="12">
+        <text x="510" y="522" fill="#8B949E" font-size="12">
           JavaScript
         </text>
       
-        <text x="60" y="510" fill="#58A6FF" font-size="14">
+        <text x="60" y="550" fill="#58A6FF" font-size="14">
           📦 MailFLow
         </text>
 
-        <text x="410" y="510" fill="#FFD93D" font-size="14">
+        <text x="410" y="550" fill="#FFD93D" font-size="14">
           ⭐ 0
         </text>
 
-        <text x="510" y="510" fill="#8B949E" font-size="12">
+        <text x="510" y="550" fill="#8B949E" font-size="12">
           —
         </text>
       
-        <text x="60" y="538" fill="#58A6FF" font-size="14">
+        <text x="60" y="578" fill="#58A6FF" font-size="14">
           📦 MailFLow
         </text>
 
-        <text x="410" y="538" fill="#FFD93D" font-size="14">
+        <text x="410" y="578" fill="#FFD93D" font-size="14">
           ⭐ 0
         </text>
 
-        <text x="510" y="538" fill="#8B949E" font-size="12">
+        <text x="510" y="578" fill="#8B949E" font-size="12">
           —
+        </text>
+      
+        <text x="60" y="606" fill="#58A6FF" font-size="14">
+          📦 CursoDevClub
+        </text>
+
+        <text x="410" y="606" fill="#FFD93D" font-size="14">
+          ⭐ 0
+        </text>
+
+        <text x="510" y="606" fill="#8B949E" font-size="12">
+          HTML
         </text>
       
 
