@@ -52,7 +52,7 @@
       </rect>
       <text x="730" y="260" fill="#8B949E" font-size="12">16.7%</text>
     
-      <text x="60" y="300" fill="#E6EDF3" font-size="14">HTML</text>
+      <text x="60" y="300" fill="#E6EDF3" font-size="14">CSS</text>
       <rect x="260" y="286" rx="10" width="450" height="16" fill="#21262D"/>
       <rect x="260" y="286" rx="10" width="0" height="16" fill="#4D96FF">
         <animate attributeName="width" from="0" to="83.5" dur="1.2s" fill="freeze"/>
@@ -171,7 +171,7 @@
         </text>
 
         <text x="510" y="606" fill="#8B949E" font-size="12">
-          HTML
+          CSS
         </text>
       
 
