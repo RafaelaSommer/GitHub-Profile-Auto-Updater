@@ -41,30 +41,30 @@
       <text x="60" y="220" fill="#E6EDF3" font-size="14">JavaScript</text>
       <rect x="260" y="206" rx="10" width="450" height="16" fill="#21262D"/>
       <rect x="260" y="206" rx="10" width="0" height="16" fill="#FF6B6B">
-        <animate attributeName="width" from="0" to="285.5" dur="1.2s" fill="freeze"/>
+        <animate attributeName="width" from="0" to="250" dur="1.2s" fill="freeze"/>
       </rect>
-      <text x="730" y="220" fill="#8B949E" font-size="12">57.1%</text>
+      <text x="730" y="220" fill="#8B949E" font-size="12">50.0%</text>
     
-      <text x="60" y="260" fill="#E6EDF3" font-size="14">Python</text>
+      <text x="60" y="260" fill="#E6EDF3" font-size="14">HTML</text>
       <rect x="260" y="246" rx="10" width="450" height="16" fill="#21262D"/>
       <rect x="260" y="246" rx="10" width="0" height="16" fill="#6BCB77">
-        <animate attributeName="width" from="0" to="71.5" dur="1.2s" fill="freeze"/>
+        <animate attributeName="width" from="0" to="125" dur="1.2s" fill="freeze"/>
       </rect>
-      <text x="730" y="260" fill="#8B949E" font-size="12">14.3%</text>
+      <text x="730" y="260" fill="#8B949E" font-size="12">25.0%</text>
     
-      <text x="60" y="300" fill="#E6EDF3" font-size="14">TypeScript</text>
+      <text x="60" y="300" fill="#E6EDF3" font-size="14">Python</text>
       <rect x="260" y="286" rx="10" width="450" height="16" fill="#21262D"/>
       <rect x="260" y="286" rx="10" width="0" height="16" fill="#4D96FF">
-        <animate attributeName="width" from="0" to="71.5" dur="1.2s" fill="freeze"/>
+        <animate attributeName="width" from="0" to="62.5" dur="1.2s" fill="freeze"/>
       </rect>
-      <text x="730" y="300" fill="#8B949E" font-size="12">14.3%</text>
+      <text x="730" y="300" fill="#8B949E" font-size="12">12.5%</text>
     
-      <text x="60" y="340" fill="#E6EDF3" font-size="14">HTML</text>
+      <text x="60" y="340" fill="#E6EDF3" font-size="14">TypeScript</text>
       <rect x="260" y="326" rx="10" width="450" height="16" fill="#21262D"/>
       <rect x="260" y="326" rx="10" width="0" height="16" fill="#FFD93D">
-        <animate attributeName="width" from="0" to="71.5" dur="1.2s" fill="freeze"/>
+        <animate attributeName="width" from="0" to="62.5" dur="1.2s" fill="freeze"/>
       </rect>
-      <text x="730" y="340" fill="#8B949E" font-size="12">14.3%</text>
+      <text x="730" y="340" fill="#8B949E" font-size="12">12.5%</text>
     
 
   <line
@@ -178,7 +178,7 @@
         </text>
 
         <text x="510" y="646" fill="#8B949E" font-size="12">
-          —
+          HTML
         </text>
       
 
